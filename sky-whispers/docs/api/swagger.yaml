@@ -1,0 +1,1375 @@
+openapi: 3.0.3
+info:
+  title: Sky Whispers (云端气象局) API
+  description: |
+    云端气象局后端 API 文档。
+
+    ## 认证方式
+    除登录和公开接口外，所有接口需要在请求头中携带 JWT Token：
+    ```
+    Authorization: Bearer <token>
+    ```
+
+    ## 响应格式
+    所有接口统一返回格式：
+    ```json
+    {
+      "code": 0,
+      "message": "操作成功",
+      "data": {}
+    }
+    ```
+    - `code` 为 0 表示成功，非 0 表示错误
+    - 错误时 `code` 为 HTTP 状态码或错误码字符串
+  version: 1.0.0
+  contact:
+    name: Sky Whispers Team
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: 本地开发环境
+  - url: https://api.skywhispers.example.com/api/v1
+    description: 生产环境
+
+security:
+  - BearerAuth: []
+
+tags:
+  - name: 认证
+    description: 微信登录与令牌管理
+  - name: 用户
+    description: 用户资料与步数
+  - name: 岛屿
+    description: 浮岛管理与访问
+  - name: 天气
+    description: 天气数据查询与同步
+  - name: 植物
+    description: 植物种植、浇水、收获
+  - name: 精灵
+    description: 天气精灵捕获与养成
+  - name: 社交
+    description: 好友与礼物系统
+  - name: 商店
+    description: 物品购买与背包管理
+  - name: 季票
+    description: 赛季通行证
+  - name: 广告
+    description: 广告奖励系统
+  - name: 步数
+    description: 步数提交与历史
+  - name: 管理后台
+    description: 管理员专用接口
+
+paths:
+  # ==================== 认证 ====================
+  /auth/login:
+    post:
+      tags: [认证]
+      summary: 微信小程序登录
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+                  description: 微信登录凭证
+            example:
+              code: "0a1B2c3D4e5F6g7H8i9J0k"
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: "登录成功"
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: "eyJhbGciOiJIUzI1NiIs..."
+                      refreshToken:
+                        type: string
+                        example: "eyJhbGciOiJIUzI1NiIs..."
+                      userInfo:
+                        $ref: '#/components/schemas/UserInfo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [认证]
+      summary: 刷新访问令牌
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refreshToken]
+              properties:
+                refreshToken:
+                  type: string
+                  description: 刷新令牌
+            example:
+              refreshToken: "eyJhbGciOiJIUzI1NiIs..."
+      responses:
+        '200':
+          description: 刷新成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  message:
+                    type: string
+                    example: "刷新成功"
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==================== 用户 ====================
+  /user/profile:
+    get:
+      tags: [用户]
+      summary: 获取用户资料
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    $ref: '#/components/schemas/UserDetail'
+    put:
+      tags: [用户]
+      summary: 更新用户资料
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                  maxLength: 50
+                  description: 昵称
+                avatarUrl:
+                  type: string
+                  maxLength: 512
+                  description: 头像 URL
+            example:
+              nickname: "云端旅者"
+              avatarUrl: "https://example.com/avatar.png"
+      responses:
+        '200':
+          description: 更新成功
+
+  /user/location:
+    put:
+      tags: [用户]
+      summary: 更新用户位置
+      description: 更新用户地理位置，用于获取当地天气数据
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lat, lng]
+              properties:
+                lat:
+                  type: number
+                  minimum: -90
+                  maximum: 90
+                  description: 纬度
+                lng:
+                  type: number
+                  minimum: -180
+                  maximum: 180
+                  description: 经度
+                cityCode:
+                  type: string
+                  maxLength: 20
+                  description: 城市编码
+            example:
+              lat: 30.2741
+              lng: 120.1551
+              cityCode: "101210101"
+      responses:
+        '200':
+          description: 更新成功
+
+  /user/steps:
+    post:
+      tags: [用户]
+      summary: 提交步数
+      description: 提交每日步数数据，步数将转换为风之力
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [steps, date]
+              properties:
+                steps:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+                  description: 步数
+                date:
+                  type: string
+                  pattern: '^\d{4}-\d{2}-\d{2}$'
+                  description: 日期 (YYYY-MM-DD)
+            example:
+              steps: 8500
+              date: "2026-06-04"
+      responses:
+        '200':
+          description: 提交成功
+
+  # ==================== 岛屿 ====================
+  /island:
+    get:
+      tags: [岛屿]
+      summary: 获取自己的岛屿数据
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    $ref: '#/components/schemas/Island'
+
+  /island/{id}/visit:
+    post:
+      tags: [岛屿]
+      summary: 访问好友岛屿
+      parameters:
+        - $ref: '#/components/parameters/IslandId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [interactionType]
+              properties:
+                interactionType:
+                  type: string
+                  enum: [water, breeze, gift, view]
+                  description: 交互类型
+            example:
+              interactionType: "water"
+      responses:
+        '200':
+          description: 访问成功
+
+  /island/skin:
+    put:
+      tags: [岛屿]
+      summary: 更换岛屿皮肤
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [skinId]
+              properties:
+                skinId:
+                  type: integer
+                  minimum: 1
+                  description: 皮肤 ID
+            example:
+              skinId: 3
+      responses:
+        '200':
+          description: 更换成功
+
+  /island/expand:
+    post:
+      tags: [岛屿]
+      summary: 扩展岛屿槽位
+      description: 消耗金币扩展种植槽位
+      responses:
+        '200':
+          description: 扩展成功
+
+  /island/weather:
+    put:
+      tags: [岛屿]
+      summary: 更新岛屿天气效果
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [weatherType, lightLevel, moistureLevel]
+              properties:
+                weatherType:
+                  type: string
+                  enum: [sunny, cloudy, rainy, stormy, snowy, foggy, windy]
+                  description: 天气类型
+                lightLevel:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                  description: 光照等级
+                moistureLevel:
+                  type: integer
+                  minimum: 0
+                  maximum: 100
+                  description: 湿度等级
+            example:
+              weatherType: "rainy"
+              lightLevel: 40
+              moistureLevel: 80
+      responses:
+        '200':
+          description: 更新成功
+
+  # ==================== 天气 ====================
+  /weather/current:
+    get:
+      tags: [天气]
+      summary: 获取当前天气
+      security: []
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    $ref: '#/components/schemas/WeatherData'
+
+  /weather/forecast:
+    get:
+      tags: [天气]
+      summary: 获取天气预报
+      security: []
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+      responses:
+        '200':
+          description: 获取成功
+
+  /weather/sync:
+    post:
+      tags: [天气]
+      summary: 强制同步天气数据
+      description: 将真实天气数据同步到游戏内岛屿
+      responses:
+        '200':
+          description: 同步成功
+
+  # ==================== 植物 ====================
+  /plants/{islandId}:
+    get:
+      tags: [植物]
+      summary: 获取岛屿上的植物列表
+      parameters:
+        - name: islandId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Plant'
+
+  /plants/plant:
+    post:
+      tags: [植物]
+      summary: 种植种子
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [plantTypeId]
+              properties:
+                plantTypeId:
+                  type: integer
+                  minimum: 1
+                  description: 植物类型 ID
+            example:
+              plantTypeId: 1
+      responses:
+        '200':
+          description: 种植成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      plantTypeId:
+                        type: integer
+                      growthStage:
+                        type: integer
+                        example: 0
+                      growthProgress:
+                        type: integer
+                        example: 0
+                      plantedAt:
+                        type: string
+                        format: date-time
+                      plantTypeName:
+                        type: string
+
+  /plants/{id}/water:
+    post:
+      tags: [植物]
+      summary: 浇水
+      description: 为植物浇水，增加生长进度 10-14 点
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 植物 ID
+      responses:
+        '200':
+          description: 浇水成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      growthStage:
+                        type: integer
+                      growthProgress:
+                        type: integer
+                      growthBonus:
+                        type: integer
+                        description: 本次浇水增加的进度 (10-14)
+
+  /plants/{id}/harvest:
+    post:
+      tags: [植物]
+      summary: 收获植物
+      description: 收获成熟的植物，获得金币和经验
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 植物 ID
+      responses:
+        '200':
+          description: 收获成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    type: object
+                    properties:
+                      plantId:
+                        type: integer
+                      coinYield:
+                        type: integer
+                        description: 获得金币
+                      expYield:
+                        type: integer
+                        description: 获得经验
+                      rarity:
+                        type: string
+                        enum: [common, uncommon, rare, epic, legendary]
+
+  /plants/calculate-growth:
+    post:
+      tags: [植物]
+      summary: 计算植物生长
+      description: 根据天气、光照、湿度计算所有生长中植物的进度
+      responses:
+        '200':
+          description: 计算完成
+
+  # ==================== 精灵 ====================
+  /sprites/collection:
+    get:
+      tags: [精灵]
+      summary: 获取精灵收藏
+      responses:
+        '200':
+          description: 获取成功
+
+  /sprites/catch:
+    post:
+      tags: [精灵]
+      summary: 尝试捕获精灵
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [spriteTypeId, currentWeather]
+              properties:
+                spriteTypeId:
+                  type: integer
+                  minimum: 1
+                  description: 精灵类型 ID
+                currentWeather:
+                  type: string
+                  enum: [sunny, cloudy, rainy, stormy, snowy, foggy, windy]
+                  description: 当前天气
+            example:
+              spriteTypeId: 1
+              currentWeather: "rainy"
+      responses:
+        '200':
+          description: 捕获结果
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    type: object
+                    properties:
+                      success:
+                        type: boolean
+                      sprite:
+                        type: object
+                        nullable: true
+
+  /sprites/{id}/feed:
+    post:
+      tags: [精灵]
+      summary: 喂食精灵
+      description: 喂食精灵增加幸福度
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 精灵实例 ID
+      responses:
+        '200':
+          description: 喂食成功
+
+  /sprites/codex:
+    get:
+      tags: [精灵]
+      summary: 获取精灵图鉴
+      description: 获取所有精灵类型信息
+      responses:
+        '200':
+          description: 获取成功
+
+  # ==================== 社交 ====================
+  /social/friends:
+    get:
+      tags: [社交]
+      summary: 获取好友列表
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        friendshipId:
+                          type: integer
+                        friendId:
+                          type: integer
+                        nickname:
+                          type: string
+                        avatarUrl:
+                          type: string
+                        level:
+                          type: integer
+                        status:
+                          type: string
+
+  /social/friend-request:
+    post:
+      tags: [社交]
+      summary: 发送好友请求
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [friendId]
+              properties:
+                friendId:
+                  type: integer
+                  minimum: 1
+                  description: 目标用户 ID
+            example:
+              friendId: 42
+      responses:
+        '200':
+          description: 请求已发送
+        '409':
+          description: 好友关系已存在
+
+  /social/friend-request/{id}/accept:
+    post:
+      tags: [社交]
+      summary: 接受好友请求
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 好友关系 ID
+      responses:
+        '200':
+          description: 已接受
+
+  /social/friend-requests/pending:
+    get:
+      tags: [社交]
+      summary: 获取待处理的好友请求
+      responses:
+        '200':
+          description: 获取成功
+
+  /social/gifts/send:
+    post:
+      tags: [社交]
+      summary: 发送礼物
+      description: 只能给已接受的好友发送礼物，礼物 7 天后过期
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [receiverId, giftType]
+              properties:
+                receiverId:
+                  type: integer
+                  minimum: 1
+                  description: 接收者 ID
+                giftType:
+                  type: string
+                  enum: [rain_cloud, breeze, plant_seed, sprite_food]
+                  description: 礼物类型
+                giftData:
+                  type: object
+                  description: 礼物附加数据
+                message:
+                  type: string
+                  maxLength: 200
+                  description: 留言
+            example:
+              receiverId: 42
+              giftType: "rain_cloud"
+              giftData:
+                moisture_bonus: 20
+              message: "送你一朵雨云~"
+      responses:
+        '200':
+          description: 礼物已发送
+
+  /social/gifts/{id}/claim:
+    post:
+      tags: [社交]
+      summary: 领取礼物
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: 礼物 ID
+      responses:
+        '200':
+          description: 礼物已领取
+
+  /social/gifts/received:
+    get:
+      tags: [社交]
+      summary: 获取收到的礼物列表
+      responses:
+        '200':
+          description: 获取成功
+
+  /social/gifts/unclaimed:
+    get:
+      tags: [社交]
+      summary: 获取未领取的礼物
+      responses:
+        '200':
+          description: 获取成功
+
+  # ==================== 商店 ====================
+  /shop/items:
+    get:
+      tags: [商店]
+      summary: 获取商店物品列表
+      security: []
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [skin, effect, prop, pass]
+          description: 按类别筛选
+      responses:
+        '200':
+          description: 获取成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ShopItem'
+
+  /shop/purchase:
+    post:
+      tags: [商店]
+      summary: 购买物品
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [itemId]
+              properties:
+                itemId:
+                  type: integer
+                  minimum: 1
+                  description: 物品 ID
+                quantity:
+                  type: integer
+                  minimum: 1
+                  maximum: 99
+                  default: 1
+                  description: 购买数量
+            example:
+              itemId: 1
+              quantity: 1
+      responses:
+        '200':
+          description: 购买成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 0
+                  data:
+                    type: object
+                    properties:
+                      itemId:
+                        type: integer
+                      quantity:
+                        type: integer
+                      totalCost:
+                        type: integer
+                      remainingCoins:
+                        type: integer
+        '400':
+          description: 金币不足或物品不可购买
+
+  /shop/inventory:
+    get:
+      tags: [商店]
+      summary: 获取用户背包
+      responses:
+        '200':
+          description: 获取成功
+
+  /shop/equip:
+    post:
+      tags: [商店]
+      summary: 装备物品
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [inventoryId]
+              properties:
+                inventoryId:
+                  type: integer
+                  minimum: 1
+                  description: 背包记录 ID
+            example:
+              inventoryId: 5
+      responses:
+        '200':
+          description: 装备成功
+
+  # ==================== 季票 ====================
+  /season-pass/current:
+    get:
+      tags: [季票]
+      summary: 获取当前赛季信息
+      security: []
+      responses:
+        '200':
+          description: 获取成功
+
+  /season-pass/{passId}/progress:
+    get:
+      tags: [季票]
+      summary: 获取季票进度
+      parameters:
+        - name: passId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 获取成功
+
+  /season-pass/{passId}/upgrade:
+    post:
+      tags: [季票]
+      summary: 升级为高级季票
+      parameters:
+        - name: passId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 升级成功
+
+  /season-pass/{passId}/claim:
+    post:
+      tags: [季票]
+      summary: 领取季票奖励
+      parameters:
+        - name: passId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [level]
+              properties:
+                level:
+                  type: integer
+                  minimum: 1
+                  description: 领取的等级
+      responses:
+        '200':
+          description: 领取成功
+
+  # ==================== 广告 ====================
+  /ads/watch:
+    post:
+      tags: [广告]
+      summary: 记录广告观看
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [adType]
+              properties:
+                adType:
+                  type: string
+                  enum: [meteor_shower, weather_boost, daily_bonus]
+                  description: 广告类型
+            example:
+              adType: "daily_bonus"
+      responses:
+        '200':
+          description: 记录成功
+
+  /ads/available:
+    get:
+      tags: [广告]
+      summary: 获取可观看的广告列表
+      responses:
+        '200':
+          description: 获取成功
+
+  # ==================== 步数 ====================
+  /steps/submit:
+    post:
+      tags: [步数]
+      summary: 提交步数
+      description: 提交每日步数，自动转换为风之力 (steps / 100)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [steps, date]
+              properties:
+                steps:
+                  type: integer
+                  minimum: 0
+                  maximum: 100000
+                  description: 步数
+                date:
+                  type: string
+                  pattern: '^\d{4}-\d{2}-\d{2}$'
+                  description: 日期 (YYYY-MM-DD)
+            example:
+              steps: 8500
+              date: "2026-06-04"
+      responses:
+        '200':
+          description: 提交成功
+
+  /steps/history:
+    get:
+      tags: [步数]
+      summary: 获取步数历史
+      responses:
+        '200':
+          description: 获取成功
+
+  # ==================== 管理后台 ====================
+  /admin/dashboard:
+    get:
+      tags: [管理后台]
+      summary: 获取管理面板数据
+      description: 需要管理员权限
+      responses:
+        '200':
+          description: 获取成功
+
+  /admin/users:
+    get:
+      tags: [管理后台]
+      summary: 获取用户列表
+      description: 需要管理员权限
+      responses:
+        '200':
+          description: 获取成功
+
+  /admin/users/{id}:
+    get:
+      tags: [管理后台]
+      summary: 获取用户详情
+      description: 需要管理员权限
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 获取成功
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    IslandId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: 岛屿 ID
+
+  schemas:
+    UserInfo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        nickname:
+          type: string
+          example: "旅行者"
+        avatarUrl:
+          type: string
+          example: "https://example.com/avatar.png"
+        level:
+          type: integer
+          example: 5
+        coins:
+          type: integer
+          example: 500
+        windPower:
+          type: integer
+          example: 50
+
+    UserDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+        openid:
+          type: string
+        nickname:
+          type: string
+        avatarUrl:
+          type: string
+        level:
+          type: integer
+        exp:
+          type: integer
+        coins:
+          type: integer
+        windPower:
+          type: integer
+        totalSteps:
+          type: integer
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    Island:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        userId:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "我的浮岛"
+        skinId:
+          type: integer
+          example: 1
+        level:
+          type: integer
+          example: 3
+        expansionSlots:
+          type: integer
+          example: 6
+        weatherType:
+          type: string
+          enum: [sunny, cloudy, rainy, stormy, snowy, foggy, windy]
+          example: "sunny"
+        lightLevel:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 50
+        moistureLevel:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 50
+        windmillLevel:
+          type: integer
+          example: 1
+        autoCollect:
+          type: boolean
+          example: false
+
+    Plant:
+      type: object
+      properties:
+        id:
+          type: integer
+        plantTypeId:
+          type: integer
+        growthStage:
+          type: integer
+          minimum: 0
+          maximum: 3
+          description: "0=种子, 1=发芽, 2=生长中, 3=成熟"
+        growthProgress:
+          type: integer
+          minimum: 0
+          maximum: 100
+        isCollected:
+          type: boolean
+        plantedAt:
+          type: string
+          format: date-time
+        maturedAt:
+          type: string
+          format: date-time
+          nullable: true
+        plantType:
+          type: object
+          nullable: true
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            rarity:
+              type: string
+            coinYield:
+              type: integer
+
+    ShopItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+          enum: [skin, effect, prop, pass]
+        priceCoins:
+          type: integer
+        priceRmb:
+          type: number
+        itemData:
+          type: object
+        isSeasonal:
+          type: boolean
+        availableFrom:
+          type: string
+          format: date-time
+          nullable: true
+        availableUntil:
+          type: string
+          format: date-time
+          nullable: true
+
+    WeatherData:
+      type: object
+      properties:
+        coord:
+          type: object
+          properties:
+            lon:
+              type: number
+            lat:
+              type: number
+        weather:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              main:
+                type: string
+              description:
+                type: string
+        main:
+          type: object
+          properties:
+            temp:
+              type: number
+            humidity:
+              type: integer
+        wind:
+          type: object
+          properties:
+            speed:
+              type: number
+
+    Error:
+      type: object
+      properties:
+        code:
+          oneOf:
+            - type: integer
+            - type: string
+          description: 错误码
+        message:
+          type: string
+          description: 错误信息
+        data:
+          type: object
+          nullable: true
+
+  responses:
+    BadRequest:
+      description: 请求参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: "请求体验证失败"
+            data: null
+
+    Unauthorized:
+      description: 认证失败
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 401
+            message: "认证令牌无效或已过期"
+            data: null
+
+    NotFound:
+      description: 资源未找到
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 404
+            message: "资源未找到"
+            data: null
+
+    Conflict:
+      description: 资源冲突
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 409
+            message: "资源已存在"
+            data: null
+
+    RateLimited:
+      description: 请求过于频繁
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 429
+            message: "请求过于频繁，请稍后再试"
+            data: null
+
+    InternalError:
+      description: 服务器内部错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 500
+            message: "服务器内部错误"
+            data: null

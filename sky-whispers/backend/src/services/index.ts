@@ -1,0 +1,12 @@
+export { AuthService } from '@/services/AuthService';
+export { UserService } from '@/services/UserService';
+export { IslandService } from '@/services/IslandService';
+export { WeatherService } from '@/services/WeatherService';
+export { PlantService } from '@/services/PlantService';
+export { SpriteService } from '@/services/SpriteService';
+export { SocialService } from '@/services/SocialService';
+export { ShopService } from '@/services/ShopService';
+export { SeasonPassService } from '@/services/SeasonPassService';
+export { AdService } from '@/services/AdService';
+export { StepService } from '@/services/StepService';
+export { GameCalculationService } from '@/services/GameCalculationService';

@@ -1,0 +1,24 @@
+{
+  "name": "sky-whispers-minigame",
+  "version": "1.0.0",
+  "description": "云端气象局 - 微信小游戏",
+  "main": "game.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "lint": "eslint src/ --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "minigame-api-typings": "^3.8.20"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

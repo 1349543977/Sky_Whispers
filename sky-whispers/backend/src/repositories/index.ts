@@ -1,0 +1,14 @@
+export { BaseRepository } from '@/repositories/BaseRepository';
+export { UserRepository } from '@/repositories/UserRepository';
+export { IslandRepository } from '@/repositories/IslandRepository';
+export { PlantRepository } from '@/repositories/PlantRepository';
+export { PlantTypeRepository } from '@/repositories/PlantTypeRepository';
+export { SpriteRepository } from '@/repositories/SpriteRepository';
+export { SpriteTypeRepository } from '@/repositories/SpriteTypeRepository';
+export { FriendshipRepository } from '@/repositories/FriendshipRepository';
+export { GiftRepository } from '@/repositories/GiftRepository';
+export { ShopItemRepository } from '@/repositories/ShopItemRepository';
+export { InventoryRepository } from '@/repositories/InventoryRepository';
+export { SeasonPassRepository } from '@/repositories/SeasonPassRepository';
+export { AdRepository } from '@/repositories/AdRepository';
+export { StepRepository } from '@/repositories/StepRepository';

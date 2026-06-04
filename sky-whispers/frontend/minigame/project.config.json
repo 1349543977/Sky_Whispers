@@ -1,0 +1,37 @@
+{
+  "description": "云端气象局 - 微信小游戏",
+  "packOptions": {
+    "ignore": [
+      { "type": "file", "value": "tsconfig.json" },
+      { "type": "file", "value": "package.json" },
+      { "type": "file", "value": "package-lock.json" },
+      { "type": "folder", "value": "node_modules" },
+      { "type": "folder", "value": "src" }
+    ]
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "compileHotReLoad": false,
+    "postcss": false,
+    "minified": true,
+    "newFeature": true,
+    "autoAudits": false,
+    "coverView": true,
+    "showShadowRootInWxmlPanel": false,
+    "scopeDataCheck": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": true,
+    "uploadWithSourceMap": true,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "compileType": "game",
+  "appid": "wx0000000000000000",
+  "projectname": "sky-whispers-minigame",
+  "condition": {}
+}

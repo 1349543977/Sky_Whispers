@@ -1,0 +1,35 @@
+import { Scene } from '../core/Scene';
+import { Renderer } from '../core/Renderer';
+import { Input } from '../core/Input';
+export declare class CodexScene extends Scene {
+    private apiClient;
+    private storageService;
+    private currentTab;
+    private plantTypes;
+    private spriteTypes;
+    private discoveredPlants;
+    private discoveredSprites;
+    private loading;
+    private plantCards;
+    private spriteCards;
+    private scrollView;
+    private skeleton;
+    private toastManager;
+    private backButton;
+    private plantsTabButton;
+    private spritesTabButton;
+    constructor(renderer: Renderer, input: Input);
+    onLoad(): Promise<void>;
+    private loadData;
+    private createPlantCards;
+    private createSpriteCards;
+    private switchTab;
+    private showPlantDetail;
+    private showSpriteDetail;
+    private navigateBack;
+    update(dt: number): void;
+    fixedUpdate(_dt: number): void;
+    render(): void;
+    onUnload(): void;
+}
+//# sourceMappingURL=CodexScene.d.ts.map

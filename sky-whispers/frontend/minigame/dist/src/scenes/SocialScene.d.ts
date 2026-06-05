@@ -1,0 +1,33 @@
+import { Scene } from '../core/Scene';
+import { Renderer } from '../core/Renderer';
+import { Input } from '../core/Input';
+export declare class SocialScene extends Scene {
+    private socialSystem;
+    private storageService;
+    private apiClient;
+    private friendItems;
+    private giftPopup;
+    private scrollView;
+    private skeleton;
+    private tabBar;
+    private toastManager;
+    private backButton;
+    private giftInboxButton;
+    private loading;
+    private selectedFriendId;
+    private giftInbox;
+    constructor(renderer: Renderer, input: Input);
+    onLoad(): Promise<void>;
+    private loadFriends;
+    private createFriendItems;
+    private visitFriend;
+    private showGiftPopup;
+    private sendGift;
+    private showGiftInbox;
+    private navigateBack;
+    update(dt: number): void;
+    fixedUpdate(_dt: number): void;
+    render(): void;
+    onUnload(): void;
+}
+//# sourceMappingURL=SocialScene.d.ts.map

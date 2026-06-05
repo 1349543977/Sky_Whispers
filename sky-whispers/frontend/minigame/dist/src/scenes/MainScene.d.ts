@@ -1,0 +1,44 @@
+import { Scene } from '../core/Scene';
+import { Renderer } from '../core/Renderer';
+import { Input } from '../core/Input';
+export declare class MainScene extends Scene {
+    private apiClient;
+    private wxService;
+    private storageService;
+    private weatherSystem;
+    private growthSystem;
+    private coinSystem;
+    private stepSystem;
+    private spriteSpawnSystem;
+    private island;
+    private plants;
+    private sprites;
+    private windmill;
+    private clouds;
+    private rainEffect;
+    private snowEffect;
+    private thunderEffect;
+    private fogEffect;
+    private currentWeatherType;
+    private tabBar;
+    private coinDisplay;
+    private weatherWidget;
+    private stepWidget;
+    private toastManager;
+    constructor(renderer: Renderer, input: Input);
+    onLoad(): Promise<void>;
+    private initUI;
+    private loadGameData;
+    private createIsland;
+    private setupEventListeners;
+    private initWeatherEffects;
+    private updateWeatherEffects;
+    private spawnClouds;
+    private handleTabChange;
+    update(dt: number): void;
+    fixedUpdate(dt: number): void;
+    render(): void;
+    private renderSkyBackground;
+    onUnload(): void;
+}
+//# sourceMappingURL=MainScene.d.ts.map

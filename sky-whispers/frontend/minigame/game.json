@@ -5,5 +5,10 @@
     "request": 10000,
     "connectSocket": 10000
   },
-  "subpackages": []
+  "subpackages": [],
+  "entryPagePath": "game.js",
+  "game": {
+    "framework": "cocos2d-html5",
+    "debugMode": false
+  }
 }

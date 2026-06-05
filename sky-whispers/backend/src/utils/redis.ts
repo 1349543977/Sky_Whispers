@@ -61,12 +61,14 @@ class MockRedis {
  * @returns Redis 客户端
  */
 export function getRedisClient(): Redis | MockRedis {
-  if (config.isTest && !redisClient) {
+  // 开发和测试环境均使用 MockRedis，无需真实 Redis 服务
+  if ((config.isTest || config.isDev) && !redisClient) {
     redisClient = new MockRedis() as unknown as Redis;
+    logger.info('使用 MockRedis（内存缓存）');
     return redisClient;
   }
 
-  if (!redisClient) {
+  if (!config.isTest && !config.isDev && !redisClient) {
     redisClient = new Redis({
       host: config.redis.host,
       port: config.redis.port,

@@ -2,31 +2,19 @@ import { Sequelize } from 'sequelize';
 import { config } from '@/config';
 import { logger } from '@/utils/logger';
 
-/** Sequelize 实例 */
+/** Sequelize 实例 - 测试环境下延迟创建 */
 let _sequelize: Sequelize | null = null;
 
 /**
  * 获取 Sequelize 实例（单例模式）
+ * 测试环境下使用 sqlite3 内存数据库
  */
 export function getSequelize(): Sequelize {
   if (!_sequelize) {
-    throw new Error('数据库未初始化，请先调用 initDatabase()');
-  }
-  return _sequelize;
-}
-
-/**
- * 初始化数据库连接并同步模型
- * - 开发/测试模式：使用 SQLite 内存数据库
- * - 生产模式：使用 MySQL
- */
-export async function initDatabase(sync: boolean = false): Promise<void> {
-  try {
-    if (config.db.dialect === 'sqlite' || config.isDev || config.isTest) {
-      // 使用 SQLite 内存数据库（Sequelize 内置支持，无需额外驱动）
+    if (config.isTest) {
       _sequelize = new Sequelize({
         dialect: 'sqlite',
-        storage: config.isTest ? ':memory:' : config.db.storage || ':memory:',
+        storage: ':memory:',
         logging: false,
         define: {
           underscored: true,
@@ -35,9 +23,7 @@ export async function initDatabase(sync: boolean = false): Promise<void> {
           updatedAt: 'updated_at',
         },
       });
-      logger.info(`使用 SQLite 数据库: ${config.isTest ? ':memory:' : config.db.storage}`);
     } else {
-      // 生产模式使用 MySQL
       _sequelize = new Sequelize({
         database: config.db.name,
         username: config.db.user,
@@ -60,12 +46,29 @@ export async function initDatabase(sync: boolean = false): Promise<void> {
         },
       });
     }
+  }
+  return _sequelize;
+}
 
-    await _sequelize.authenticate();
+/** 兼容导出 - 模型文件使用 sequelize 导入 */
+export const sequelize = new Proxy({} as Sequelize, {
+  get(_target, prop) {
+    return Reflect.get(getSequelize(), prop);
+  },
+});
+
+/**
+ * 初始化数据库连接并同步模型
+ * @param sync 是否同步模型到数据库
+ */
+export async function initDatabase(sync: boolean = false): Promise<void> {
+  try {
+    const db = getSequelize();
+    await db.authenticate();
     logger.info('数据库连接成功');
 
     if (sync) {
-      await _sequelize.sync({ alter: config.isDev });
+      await db.sync({ alter: config.isDev });
       logger.info('数据库模型同步完成');
     }
   } catch (error) {

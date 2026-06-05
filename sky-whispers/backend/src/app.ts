@@ -43,7 +43,7 @@ function createApp(): Koa {
  */
 async function startServer(): Promise<void> {
   try {
-    await initDatabase(true);
+    await initDatabase(config.isDev);
     logger.info('数据库初始化完成');
 
     const app = createApp();

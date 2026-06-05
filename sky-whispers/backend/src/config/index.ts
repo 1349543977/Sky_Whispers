@@ -9,8 +9,6 @@ const envSchema = Joi.object({
   PORT: Joi.number().default(3000),
   NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
 
-  DB_DIALECT: Joi.string().valid('mysql', 'sqlite').default('sqlite'),
-  DB_STORAGE: Joi.string().default('./data/sky_whispers.db'),
   DB_HOST: Joi.string().default('localhost'),
   DB_PORT: Joi.number().default(3306),
   DB_NAME: Joi.string().default('sky_whispers'),
@@ -20,12 +18,12 @@ const envSchema = Joi.object({
   REDIS_HOST: Joi.string().default('localhost'),
   REDIS_PORT: Joi.number().default(6379),
 
-  JWT_SECRET: Joi.string().default('sky_whispers_dev_jwt_secret'),
+  JWT_SECRET: Joi.string().required(),
   JWT_EXPIRES_IN: Joi.string().default('7d'),
   JWT_REFRESH_EXPIRES_IN: Joi.string().default('30d'),
 
-  WECHAT_APP_ID: Joi.string().default('wx_test_app_id'),
-  WECHAT_APP_SECRET: Joi.string().default('wx_test_app_secret'),
+  WECHAT_APP_ID: Joi.string().required(),
+  WECHAT_APP_SECRET: Joi.string().required(),
 
   WEATHER_API_KEY: Joi.string().allow('').default(''),
   WEATHER_API_URL: Joi.string().default('https://api.openweathermap.org/data/2.5'),
@@ -53,8 +51,6 @@ export const config = {
   isTest: envVars.NODE_ENV === 'test',
 
   db: {
-    dialect: envVars.DB_DIALECT,
-    storage: envVars.DB_STORAGE,
     host: envVars.DB_HOST,
     port: envVars.DB_PORT,
     name: envVars.DB_NAME,

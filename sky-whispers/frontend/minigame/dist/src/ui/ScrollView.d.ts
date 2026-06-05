@@ -29,6 +29,10 @@ export declare class ScrollView {
     private isRefreshing;
     private refreshProgress;
     private friction;
+    private scrollbarAlpha;
+    private scrollbarFadeTimer;
+    private pullArrowRotation;
+    private pullDistance;
     constructor(options: ScrollViewOptions);
     update(dt: number): void;
     render(renderer: Renderer): void;
@@ -40,4 +44,3 @@ export declare class ScrollView {
     scrollTo(y: number): void;
     containsPoint(px: number, py: number): boolean;
 }
-//# sourceMappingURL=ScrollView.d.ts.map

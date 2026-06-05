@@ -20,6 +20,11 @@ exports.smoothStep = smoothStep;
 exports.pointInRect = pointInRect;
 exports.pointInCircle = pointInCircle;
 exports.rectIntersect = rectIntersect;
+exports.easeOutBack = easeOutBack;
+exports.easeOutElastic = easeOutElastic;
+exports.easeOutCubic = easeOutCubic;
+exports.easeInOutCubic = easeInOutCubic;
+exports.easeOutQuart = easeOutQuart;
 function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
 }
@@ -85,5 +90,28 @@ function pointInCircle(px, py, cx, cy, radius) {
 }
 function rectIntersect(ax, ay, aw, ah, bx, by, bw, bh) {
     return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+}
+// ============================================================
+// Easing Functions - For Cloud Whisper animations
+// ============================================================
+function easeOutBack(t) {
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+}
+function easeOutElastic(t) {
+    if (t === 0 || t === 1)
+        return t;
+    const c4 = (2 * Math.PI) / 3;
+    return Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+}
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+}
+function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+function easeOutQuart(t) {
+    return 1 - Math.pow(1 - t, 4);
 }
 //# sourceMappingURL=math.js.map

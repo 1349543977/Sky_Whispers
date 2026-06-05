@@ -59,18 +59,32 @@ export function Sidebar({ className }: SidebarProps) {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          "hidden md:flex flex-col border-r bg-card transition-all duration-300",
+          "hidden md:flex flex-col border-r transition-all duration-300 ease-in-out",
           collapsed ? "w-16" : "w-64",
           className
         )}
+        style={{
+          background: "var(--sky-surface)",
+          borderColor: "var(--sky-border)",
+        }}
       >
         {/* Logo */}
-        <div className={cn("flex items-center h-16 border-b px-4", collapsed ? "justify-center" : "gap-3")}>
-          <CloudSun className="h-8 w-8 text-primary shrink-0" />
+        <div
+          className={cn(
+            "flex items-center h-16 border-b px-4 transition-all duration-300",
+            collapsed ? "justify-center" : "gap-3"
+          )}
+          style={{ borderColor: "var(--sky-border)" }}
+        >
+          <CloudSun className="h-8 w-8 shrink-0" style={{ color: "var(--sky-primary)" }} />
           {!collapsed && (
-            <div className="flex flex-col">
-              <span className="font-bold text-lg leading-tight">{APP_NAME}</span>
-              <span className="text-xs text-muted-foreground">Admin Dashboard</span>
+            <div className="flex flex-col overflow-hidden">
+              <span className="font-bold text-lg leading-tight truncate" style={{ color: "var(--sky-text)" }}>
+                {APP_NAME}
+              </span>
+              <span className="text-xs" style={{ color: "var(--sky-text-secondary)" }}>
+                Admin Dashboard
+              </span>
             </div>
           )}
         </div>
@@ -85,12 +99,30 @@ export function Sidebar({ className }: SidebarProps) {
               <Link
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  "flex items-center gap-3 rounded-[var(--radius-md)] px-3 py-2.5 text-sm font-medium transition-all duration-200",
                   collapsed && "justify-center px-2"
                 )}
+                style={{
+                  background: active
+                    ? `linear-gradient(135deg, var(--sky-primary), var(--sky-primary-dark))`
+                    : "transparent",
+                  color: active ? "#FFFFFF" : "var(--sky-text-secondary)",
+                  boxShadow: active ? "var(--shadow-glow)" : "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.background = "var(--sky-surface-warm)";
+                    e.currentTarget.style.color = "var(--sky-text)";
+                    e.currentTarget.style.transform = "translateX(2px)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!active) {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "var(--sky-text-secondary)";
+                    e.currentTarget.style.transform = "translateX(0)";
+                  }
+                }}
               >
                 {Icon && <Icon className="h-5 w-5 shrink-0" />}
                 {!collapsed && <span>{item.title}</span>}
@@ -111,10 +143,19 @@ export function Sidebar({ className }: SidebarProps) {
         </nav>
 
         {/* Collapse Toggle */}
-        <div className="border-t p-2">
+        <div className="border-t p-2" style={{ borderColor: "var(--sky-border)" }}>
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="flex items-center justify-center w-full rounded-lg py-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+            className="flex items-center justify-center w-full rounded-[var(--radius-md)] py-2 transition-all duration-200"
+            style={{ color: "var(--sky-text-secondary)" }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "var(--sky-surface-warm)";
+              e.currentTarget.style.color = "var(--sky-text)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "var(--sky-text-secondary)";
+            }}
             aria-label={collapsed ? "展开侧边栏" : "收起侧边栏"}
           >
             {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}

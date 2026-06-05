@@ -7,6 +7,7 @@ exports.SceneManager = exports.Scene = void 0;
 const types_1 = require("../types");
 const EventManager_1 = require("./EventManager");
 const types_2 = require("../types");
+const constants_1 = require("../utils/constants");
 class Scene {
     constructor(name, renderer, input) {
         this.active = false;
@@ -43,6 +44,9 @@ class SceneManager {
     constructor(renderer, input) {
         this.scenes = new Map();
         this.stack = [];
+        this.transitionAlpha = 0;
+        this.isTransitioning = false;
+        this.transitionCallback = null;
         this.renderer = renderer;
         this.input = input;
         this.eventManager = EventManager_1.EventManager.getInstance();
@@ -122,6 +126,45 @@ class SceneManager {
         const name = this.getCurrentScene();
         return name ? (_a = this.scenes.get(name)) !== null && _a !== void 0 ? _a : null : null;
     }
+    async switchWithTransition(sceneName, type = 'fade') {
+        if (this.isTransitioning)
+            return;
+        this.isTransitioning = true;
+        const fadeOutDuration = 300;
+        const startTime = Date.now();
+        return new Promise((resolve) => {
+            const fadeOut = () => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / fadeOutDuration, 1);
+                this.transitionAlpha = progress;
+                if (progress < 1) {
+                    requestAnimationFrame(fadeOut);
+                }
+                else {
+                    // Switch scene at peak
+                    this.switchTo(sceneName);
+                    // Fade in new scene
+                    const fadeInStart = Date.now();
+                    const fadeInDuration = 400;
+                    const fadeIn = () => {
+                        const elapsed = Date.now() - fadeInStart;
+                        const progress = Math.min(elapsed / fadeInDuration, 1);
+                        this.transitionAlpha = 1 - progress;
+                        if (progress < 1) {
+                            requestAnimationFrame(fadeIn);
+                        }
+                        else {
+                            this.transitionAlpha = 0;
+                            this.isTransitioning = false;
+                            resolve();
+                        }
+                    };
+                    requestAnimationFrame(fadeIn);
+                }
+            };
+            requestAnimationFrame(fadeOut);
+        });
+    }
     update(dt) {
         const scene = this.getCurrent();
         if (scene && scene.isActive) {
@@ -138,6 +181,13 @@ class SceneManager {
         const scene = this.getCurrent();
         if (scene && scene.isActive) {
             scene.render();
+        }
+        // Draw transition overlay if transitioning
+        if (this.transitionAlpha > 0) {
+            this.renderer.setAlpha(this.transitionAlpha, constants_1.LAYERS.OVERLAY, (ctx) => {
+                ctx.fillStyle = '#FAFBFD';
+                ctx.fillRect(0, 0, this.renderer.width, this.renderer.height);
+            });
         }
     }
 }

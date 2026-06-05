@@ -10,4 +10,3 @@ export declare class StorageService {
     getAllKeys(): string[];
     getStorageSize(): number;
 }
-//# sourceMappingURL=StorageService.d.ts.map

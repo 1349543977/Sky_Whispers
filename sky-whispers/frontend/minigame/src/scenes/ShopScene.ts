@@ -191,7 +191,7 @@ export class ShopScene extends Scene {
     }
 
     // Divider
-    this.renderer.fillRect(0, 96, w, 1, DesignTokens.colors.border, LAYERS.UI);
+    this.renderer.fillRect(0, 96, w, 1, DesignTokens.colors.neutral200, LAYERS.UI);
 
     if (this.loading) {
       this.skeleton.render(this.renderer);
@@ -233,7 +233,7 @@ export class ShopScene extends Scene {
       item.name,
       92,
       y + 16,
-      DesignTokens.colors.text,
+      DesignTokens.colors.textPrimary,
       DesignTokens.fontSize.md,
       'left',
       'top',

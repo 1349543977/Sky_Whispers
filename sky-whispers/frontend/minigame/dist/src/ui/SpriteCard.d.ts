@@ -27,4 +27,3 @@ export declare class SpriteCard {
     handleTap(x: number, y: number): boolean;
     setPosition(x: number, y: number): void;
 }
-//# sourceMappingURL=SpriteCard.d.ts.map

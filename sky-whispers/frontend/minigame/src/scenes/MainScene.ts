@@ -31,6 +31,7 @@ import { WxService } from '../services/WxService';
 import { StorageService } from '../services/StorageService';
 import { LAYERS, ANIMATION } from '../utils/constants';
 import { DesignTokens } from '../utils/color';
+import { hexToRgb, lerpColor, colorToString } from '../utils/color';
 
 export class MainScene extends Scene {
   private apiClient: ApiClient;
@@ -57,6 +58,14 @@ export class MainScene extends Scene {
   private thunderEffect: ThunderEffect | null = null;
   private fogEffect: FogEffect | null = null;
   private currentWeatherType: WeatherType = WeatherType.Sunny;
+
+  // Sky transition state
+  private skyTransitionProgress: number = 1;
+  private skyTransitionDuration: number = ANIMATION.SKY_TRANSITION_DURATION;
+  private previousSkyTop: string = DesignTokens.colors.skySunnyTop;
+  private previousSkyBottom: string = DesignTokens.colors.skySunnyBottom;
+  private targetSkyTop: string = DesignTokens.colors.skySunnyTop;
+  private targetSkyBottom: string = DesignTokens.colors.skySunnyBottom;
 
   // UI
   private tabBar!: TabBar;
@@ -210,6 +219,13 @@ export class MainScene extends Scene {
   private updateWeatherEffects(weatherType: WeatherType): void {
     if (this.currentWeatherType === weatherType) return;
 
+    // Start sky transition
+    this.previousSkyTop = this.getCurrentSkyTopColor();
+    this.previousSkyBottom = this.getCurrentSkyBottomColor();
+    this.targetSkyTop = this.getSkyTopColorForWeather(weatherType);
+    this.targetSkyBottom = this.getSkyBottomColorForWeather(weatherType);
+    this.skyTransitionProgress = 0;
+
     // Deactivate all effects
     this.rainEffect?.setActive(false);
     this.snowEffect?.setActive(false);
@@ -282,6 +298,14 @@ export class MainScene extends Scene {
   }
 
   update(dt: number): void {
+    // Update sky transition
+    if (this.skyTransitionProgress < 1) {
+      this.skyTransitionProgress = Math.min(
+        1,
+        this.skyTransitionProgress + dt / this.skyTransitionDuration,
+      );
+    }
+
     // Update systems
     this.weatherSystem.update(dt);
     this.growthSystem.update(dt);
@@ -367,35 +391,64 @@ export class MainScene extends Scene {
   }
 
   private renderSkyBackground(w: number, h: number): void {
-    let topColor = '#87CEEB';
-    let bottomColor = '#E0F7FA';
-
-    switch (this.currentWeatherType) {
-      case WeatherType.Rainy:
-        topColor = '#546E7A';
-        bottomColor = '#78909C';
-        break;
-      case WeatherType.Snowy:
-        topColor = '#B0BEC5';
-        bottomColor = '#ECEFF1';
-        break;
-      case WeatherType.Thunderstorm:
-        topColor = '#37474F';
-        bottomColor = '#546E7A';
-        break;
-      case WeatherType.Foggy:
-        topColor = '#90A4AE';
-        bottomColor = '#CFD8DC';
-        break;
-      case WeatherType.Cloudy:
-        topColor = '#78909C';
-        bottomColor = '#B0BEC5';
-        break;
-      default:
-        break;
-    }
+    const topColor = this.getCurrentSkyTopColor();
+    const bottomColor = this.getCurrentSkyBottomColor();
 
     this.renderer.drawGradientRect(0, 0, w, h, topColor, bottomColor, true, LAYERS.BACKGROUND);
+  }
+
+  private getSkyTopColorForWeather(weatherType: WeatherType): string {
+    switch (weatherType) {
+      case WeatherType.Sunny:
+        return DesignTokens.colors.skySunnyTop;
+      case WeatherType.Cloudy:
+        return DesignTokens.colors.skyCloudyTop;
+      case WeatherType.Rainy:
+        return DesignTokens.colors.skyRainyTop;
+      case WeatherType.Snowy:
+        return DesignTokens.colors.skySnowyTop;
+      case WeatherType.Thunderstorm:
+        return DesignTokens.colors.skyThunderTop;
+      case WeatherType.Foggy:
+        return DesignTokens.colors.skyFoggyTop;
+      default:
+        return DesignTokens.colors.skySunnyTop;
+    }
+  }
+
+  private getSkyBottomColorForWeather(weatherType: WeatherType): string {
+    switch (weatherType) {
+      case WeatherType.Sunny:
+        return DesignTokens.colors.skySunnyBottom;
+      case WeatherType.Cloudy:
+        return DesignTokens.colors.skyCloudyBottom;
+      case WeatherType.Rainy:
+        return DesignTokens.colors.skyRainyBottom;
+      case WeatherType.Snowy:
+        return DesignTokens.colors.skySnowyBottom;
+      case WeatherType.Thunderstorm:
+        return DesignTokens.colors.skyThunderBottom;
+      case WeatherType.Foggy:
+        return DesignTokens.colors.skyFoggyBottom;
+      default:
+        return DesignTokens.colors.skySunnyBottom;
+    }
+  }
+
+  private getCurrentSkyTopColor(): string {
+    if (this.skyTransitionProgress >= 1) return this.targetSkyTop;
+    const from = hexToRgb(this.previousSkyTop);
+    const to = hexToRgb(this.targetSkyTop);
+    const lerped = lerpColor(from, to, this.skyTransitionProgress);
+    return colorToString(lerped);
+  }
+
+  private getCurrentSkyBottomColor(): string {
+    if (this.skyTransitionProgress >= 1) return this.targetSkyBottom;
+    const from = hexToRgb(this.previousSkyBottom);
+    const to = hexToRgb(this.targetSkyBottom);
+    const lerped = lerpColor(from, to, this.skyTransitionProgress);
+    return colorToString(lerped);
   }
 
   onUnload(): void {

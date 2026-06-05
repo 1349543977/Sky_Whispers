@@ -44,7 +44,7 @@ class SettingsScene extends Scene_1.Scene {
             height: 32,
             text: this.bgmEnabled ? '开启' : '关闭',
             fontSize: color_1.DesignTokens.fontSize.xs,
-            bgColor: this.bgmEnabled ? color_1.DesignTokens.colors.success : color_1.DesignTokens.colors.textLight,
+            bgColor: this.bgmEnabled ? color_1.DesignTokens.colors.success : color_1.DesignTokens.colors.textTertiary,
             borderRadius: 16,
             onTap: () => this.toggleBgm(),
         });
@@ -55,7 +55,7 @@ class SettingsScene extends Scene_1.Scene {
             height: 32,
             text: this.sfxEnabled ? '开启' : '关闭',
             fontSize: color_1.DesignTokens.fontSize.xs,
-            bgColor: this.sfxEnabled ? color_1.DesignTokens.colors.success : color_1.DesignTokens.colors.textLight,
+            bgColor: this.sfxEnabled ? color_1.DesignTokens.colors.success : color_1.DesignTokens.colors.textTertiary,
             borderRadius: 16,
             onTap: () => this.toggleSfx(),
         });
@@ -78,7 +78,7 @@ class SettingsScene extends Scene_1.Scene {
             text: '关于云端气象局',
             fontSize: color_1.DesignTokens.fontSize.md,
             bgColor: color_1.DesignTokens.colors.surface,
-            textColor: color_1.DesignTokens.colors.text,
+            textColor: color_1.DesignTokens.colors.textPrimary,
             borderRadius: color_1.DesignTokens.borderRadius.md,
             onTap: () => this.showAbout(),
         });
@@ -90,7 +90,7 @@ class SettingsScene extends Scene_1.Scene {
             text: '帮助与反馈',
             fontSize: color_1.DesignTokens.fontSize.md,
             bgColor: color_1.DesignTokens.colors.surface,
-            textColor: color_1.DesignTokens.colors.text,
+            textColor: color_1.DesignTokens.colors.textPrimary,
             borderRadius: color_1.DesignTokens.borderRadius.md,
             onTap: () => this.showHelp(),
         });
@@ -162,16 +162,16 @@ class SettingsScene extends Scene_1.Scene {
         this.renderSettingRow('位置权限', 176);
         this.locationButton.render(this.renderer);
         // Divider
-        this.renderer.fillRect(12, 220, w - 24, 1, color_1.DesignTokens.colors.border, constants_1.LAYERS.UI);
+        this.renderer.fillRect(12, 220, w - 24, 1, color_1.DesignTokens.colors.neutral200, constants_1.LAYERS.UI);
         // About & Help
         this.aboutButton.render(this.renderer);
         this.helpButton.render(this.renderer);
         // Version info
-        this.renderer.drawText('v1.0.0', w / 2, h - 40, color_1.DesignTokens.colors.textLight, color_1.DesignTokens.fontSize.xs, 'center', 'middle', constants_1.LAYERS.UI);
+        this.renderer.drawText('v1.0.0', w / 2, h - 40, color_1.DesignTokens.colors.textTertiary, color_1.DesignTokens.fontSize.xs, 'center', 'middle', constants_1.LAYERS.UI);
         this.toastManager.render(this.renderer);
     }
     renderSettingRow(label, y) {
-        this.renderer.drawText(label, 16, y + 16, color_1.DesignTokens.colors.text, color_1.DesignTokens.fontSize.md, 'left', 'middle', constants_1.LAYERS.UI);
+        this.renderer.drawText(label, 16, y + 16, color_1.DesignTokens.colors.textPrimary, color_1.DesignTokens.fontSize.md, 'left', 'middle', constants_1.LAYERS.UI);
     }
     onUnload() {
         this.audioService.destroy();

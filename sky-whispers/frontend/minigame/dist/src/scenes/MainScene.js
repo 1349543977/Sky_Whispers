@@ -27,6 +27,8 @@ const ApiClient_1 = require("../services/ApiClient");
 const WxService_1 = require("../services/WxService");
 const StorageService_1 = require("../services/StorageService");
 const constants_1 = require("../utils/constants");
+const color_1 = require("../utils/color");
+const color_2 = require("../utils/color");
 class MainScene extends Scene_1.Scene {
     constructor(renderer, input) {
         super(types_1.SceneName.Main, renderer, input);
@@ -42,6 +44,13 @@ class MainScene extends Scene_1.Scene {
         this.thunderEffect = null;
         this.fogEffect = null;
         this.currentWeatherType = types_1.WeatherType.Sunny;
+        // Sky transition state
+        this.skyTransitionProgress = 1;
+        this.skyTransitionDuration = constants_1.ANIMATION.SKY_TRANSITION_DURATION;
+        this.previousSkyTop = color_1.DesignTokens.colors.skySunnyTop;
+        this.previousSkyBottom = color_1.DesignTokens.colors.skySunnyBottom;
+        this.targetSkyTop = color_1.DesignTokens.colors.skySunnyTop;
+        this.targetSkyBottom = color_1.DesignTokens.colors.skySunnyBottom;
         this.storageService = new StorageService_1.StorageService();
         this.apiClient = new ApiClient_1.ApiClient('', this.storageService);
         this.wxService = new WxService_1.WxService();
@@ -151,6 +160,12 @@ class MainScene extends Scene_1.Scene {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         if (this.currentWeatherType === weatherType)
             return;
+        // Start sky transition
+        this.previousSkyTop = this.getCurrentSkyTopColor();
+        this.previousSkyBottom = this.getCurrentSkyBottomColor();
+        this.targetSkyTop = this.getSkyTopColorForWeather(weatherType);
+        this.targetSkyBottom = this.getSkyBottomColorForWeather(weatherType);
+        this.skyTransitionProgress = 0;
         // Deactivate all effects
         (_a = this.rainEffect) === null || _a === void 0 ? void 0 : _a.setActive(false);
         (_b = this.snowEffect) === null || _b === void 0 ? void 0 : _b.setActive(false);
@@ -210,6 +225,10 @@ class MainScene extends Scene_1.Scene {
     }
     update(dt) {
         var _a, _b, _c, _d, _e, _f;
+        // Update sky transition
+        if (this.skyTransitionProgress < 1) {
+            this.skyTransitionProgress = Math.min(1, this.skyTransitionProgress + dt / this.skyTransitionDuration);
+        }
         // Update systems
         this.weatherSystem.update(dt);
         this.growthSystem.update(dt);
@@ -279,33 +298,61 @@ class MainScene extends Scene_1.Scene {
         this.toastManager.render(this.renderer);
     }
     renderSkyBackground(w, h) {
-        let topColor = '#87CEEB';
-        let bottomColor = '#E0F7FA';
-        switch (this.currentWeatherType) {
-            case types_1.WeatherType.Rainy:
-                topColor = '#546E7A';
-                bottomColor = '#78909C';
-                break;
-            case types_1.WeatherType.Snowy:
-                topColor = '#B0BEC5';
-                bottomColor = '#ECEFF1';
-                break;
-            case types_1.WeatherType.Thunderstorm:
-                topColor = '#37474F';
-                bottomColor = '#546E7A';
-                break;
-            case types_1.WeatherType.Foggy:
-                topColor = '#90A4AE';
-                bottomColor = '#CFD8DC';
-                break;
-            case types_1.WeatherType.Cloudy:
-                topColor = '#78909C';
-                bottomColor = '#B0BEC5';
-                break;
-            default:
-                break;
-        }
+        const topColor = this.getCurrentSkyTopColor();
+        const bottomColor = this.getCurrentSkyBottomColor();
         this.renderer.drawGradientRect(0, 0, w, h, topColor, bottomColor, true, constants_1.LAYERS.BACKGROUND);
+    }
+    getSkyTopColorForWeather(weatherType) {
+        switch (weatherType) {
+            case types_1.WeatherType.Sunny:
+                return color_1.DesignTokens.colors.skySunnyTop;
+            case types_1.WeatherType.Cloudy:
+                return color_1.DesignTokens.colors.skyCloudyTop;
+            case types_1.WeatherType.Rainy:
+                return color_1.DesignTokens.colors.skyRainyTop;
+            case types_1.WeatherType.Snowy:
+                return color_1.DesignTokens.colors.skySnowyTop;
+            case types_1.WeatherType.Thunderstorm:
+                return color_1.DesignTokens.colors.skyThunderTop;
+            case types_1.WeatherType.Foggy:
+                return color_1.DesignTokens.colors.skyFoggyTop;
+            default:
+                return color_1.DesignTokens.colors.skySunnyTop;
+        }
+    }
+    getSkyBottomColorForWeather(weatherType) {
+        switch (weatherType) {
+            case types_1.WeatherType.Sunny:
+                return color_1.DesignTokens.colors.skySunnyBottom;
+            case types_1.WeatherType.Cloudy:
+                return color_1.DesignTokens.colors.skyCloudyBottom;
+            case types_1.WeatherType.Rainy:
+                return color_1.DesignTokens.colors.skyRainyBottom;
+            case types_1.WeatherType.Snowy:
+                return color_1.DesignTokens.colors.skySnowyBottom;
+            case types_1.WeatherType.Thunderstorm:
+                return color_1.DesignTokens.colors.skyThunderBottom;
+            case types_1.WeatherType.Foggy:
+                return color_1.DesignTokens.colors.skyFoggyBottom;
+            default:
+                return color_1.DesignTokens.colors.skySunnyBottom;
+        }
+    }
+    getCurrentSkyTopColor() {
+        if (this.skyTransitionProgress >= 1)
+            return this.targetSkyTop;
+        const from = (0, color_2.hexToRgb)(this.previousSkyTop);
+        const to = (0, color_2.hexToRgb)(this.targetSkyTop);
+        const lerped = (0, color_2.lerpColor)(from, to, this.skyTransitionProgress);
+        return (0, color_2.colorToString)(lerped);
+    }
+    getCurrentSkyBottomColor() {
+        if (this.skyTransitionProgress >= 1)
+            return this.targetSkyBottom;
+        const from = (0, color_2.hexToRgb)(this.previousSkyBottom);
+        const to = (0, color_2.hexToRgb)(this.targetSkyBottom);
+        const lerped = (0, color_2.lerpColor)(from, to, this.skyTransitionProgress);
+        return (0, color_2.colorToString)(lerped);
     }
     onUnload() {
         this.weatherSystem.destroy();

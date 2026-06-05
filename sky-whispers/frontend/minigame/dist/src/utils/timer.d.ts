@@ -22,4 +22,3 @@ export declare function formatTime(seconds: number): string;
 export declare function formatDuration(ms: number): string;
 export declare function now(): number;
 export declare function todayDateString(): string;
-//# sourceMappingURL=timer.d.ts.map

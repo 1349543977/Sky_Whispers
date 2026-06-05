@@ -7,8 +7,12 @@ export declare class Plant {
     private y;
     private time;
     private swayOffset;
+    private swayAngle;
     private sparkleTime;
     private highlightAlpha;
+    private bounceOffset;
+    private bounceVelocity;
+    private prevGrowthStage;
     private width;
     private height;
     constructor(data: PlantData, type: PlantType, x: number, y: number);
@@ -20,6 +24,8 @@ export declare class Plant {
     private renderMature;
     private renderProgressBar;
     private renderSparkle;
+    /** Render a water droplet with glow for watered indicator */
+    private renderWaterDrop;
     setHighlight(): void;
     containsPoint(px: number, py: number): boolean;
     getData(): PlantData;
@@ -30,4 +36,3 @@ export declare class Plant {
         y: number;
     };
 }
-//# sourceMappingURL=Plant.d.ts.map

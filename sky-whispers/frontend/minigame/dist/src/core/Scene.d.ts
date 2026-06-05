@@ -29,6 +29,9 @@ export declare class SceneManager {
     private renderer;
     private input;
     private eventManager;
+    private transitionAlpha;
+    private isTransitioning;
+    private transitionCallback;
     constructor(renderer: Renderer, input: Input);
     register(scene: Scene): void;
     switchTo(name: SceneName): Promise<void>;
@@ -36,8 +39,8 @@ export declare class SceneManager {
     pop(): void;
     getCurrentScene(): SceneName | null;
     getCurrent(): Scene | null;
+    switchWithTransition(sceneName: string, type?: 'fade' | 'slideLeft' | 'slideRight' | 'slideUp'): Promise<void>;
     update(dt: number): void;
     fixedUpdate(dt: number): void;
     render(): void;
 }
-//# sourceMappingURL=Scene.d.ts.map

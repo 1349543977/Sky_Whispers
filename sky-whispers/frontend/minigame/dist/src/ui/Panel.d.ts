@@ -25,7 +25,8 @@ export declare class Panel {
     private onClose?;
     private visible;
     private slideProgress;
-    private targetSlideProgress;
+    private slideStartTime;
+    private isShowing;
     private closeButton;
     constructor(options: PanelOptions);
     update(dt: number): void;
@@ -41,4 +42,3 @@ export declare class Panel {
         height: number;
     };
 }
-//# sourceMappingURL=Panel.d.ts.map

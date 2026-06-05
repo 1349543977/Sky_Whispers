@@ -20,6 +20,12 @@ export declare class MainScene extends Scene {
     private thunderEffect;
     private fogEffect;
     private currentWeatherType;
+    private skyTransitionProgress;
+    private skyTransitionDuration;
+    private previousSkyTop;
+    private previousSkyBottom;
+    private targetSkyTop;
+    private targetSkyBottom;
     private tabBar;
     private coinDisplay;
     private weatherWidget;
@@ -39,6 +45,9 @@ export declare class MainScene extends Scene {
     fixedUpdate(dt: number): void;
     render(): void;
     private renderSkyBackground;
+    private getSkyTopColorForWeather;
+    private getSkyBottomColorForWeather;
+    private getCurrentSkyTopColor;
+    private getCurrentSkyBottomColor;
     onUnload(): void;
 }
-//# sourceMappingURL=MainScene.d.ts.map

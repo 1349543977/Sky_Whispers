@@ -28,6 +28,31 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
+
+    /* Sky Whispers Design System */
+    --sky-primary: #7EB5D6;
+    --sky-primary-light: #A8D4EC;
+    --sky-primary-dark: #5A94B8;
+    --sky-secondary: #8CC6A5;
+    --sky-secondary-light: #B0DCC2;
+    --sky-accent: #F2C57C;
+    --sky-accent-light: #F7DBA0;
+    --sky-tertiary: #D4A0C0;
+    --sky-surface: #FAFBFD;
+    --sky-surface-warm: #FFFCF8;
+    --sky-text: #2A3A4E;
+    --sky-text-secondary: #5A6A80;
+    --sky-border: #E1E6EE;
+
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+
+    --shadow-sm: 0 2px 4px rgba(26, 39, 56, 0.06);
+    --shadow-md: 0 4px 8px rgba(26, 39, 56, 0.1);
+    --shadow-lg: 0 8px 16px rgba(26, 39, 56, 0.14);
+    --shadow-glow: 0 0 12px rgba(126, 181, 214, 0.3);
   }
 
   .dark {
@@ -54,6 +79,26 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
+
+    /* Sky Whispers Design System - Dark Mode */
+    --sky-primary: #A8D4EC;
+    --sky-primary-light: #C4E4F5;
+    --sky-primary-dark: #7EB5D6;
+    --sky-secondary: #B0DCC2;
+    --sky-secondary-light: #CCEBD9;
+    --sky-accent: #F7DBA0;
+    --sky-accent-light: #FBECD0;
+    --sky-tertiary: #E6C0D6;
+    --sky-surface: #1A2738;
+    --sky-surface-warm: #1E2D42;
+    --sky-text: #E1E6EE;
+    --sky-text-secondary: #A3AEBF;
+    --sky-border: #2A3A4E;
+
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 12px rgba(126, 181, 214, 0.2);
   }
 }
 
@@ -125,4 +170,129 @@ html.dark {
 /* Focus visible for accessibility */
 :focus-visible {
   @apply outline-2 outline-offset-2 outline-ring;
+}
+
+/* === Smooth Scrollbar === */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sky-border) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--sky-border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--sky-text-secondary);
+}
+
+/* === Page Transition Animations === */
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes page-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+.page-transition-enter {
+  animation: page-enter 0.3s ease-out forwards;
+}
+
+.page-transition-exit {
+  animation: page-exit 0.2s ease-in forwards;
+}
+
+/* === Subtle Fade-in Animation === */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.4s ease-out forwards;
+}
+
+/* Staggered children animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: fade-in-up 0.4s ease-out forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+
+/* === Skeleton Loading Animation === */
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--sky-surface) 25%,
+    var(--sky-border) 50%,
+    var(--sky-surface) 75%
+  );
+  background-size: 200px 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+/* === Number Change Micro-animation === */
+@keyframes number-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.animate-number-pop {
+  animation: number-pop 0.3s ease-out;
+}
+
+/* === Hover Lift Effect === */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }

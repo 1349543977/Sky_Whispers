@@ -15,4 +15,3 @@ export declare class GrowthSystem {
     harvestPlant(plantId: string): number | null;
     getPlantProgress(plantId: string): number;
 }
-//# sourceMappingURL=GrowthSystem.d.ts.map

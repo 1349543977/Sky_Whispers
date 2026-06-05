@@ -28,4 +28,3 @@ export declare class SettingsScene extends Scene {
     private renderSettingRow;
     onUnload(): void;
 }
-//# sourceMappingURL=SettingsScene.d.ts.map

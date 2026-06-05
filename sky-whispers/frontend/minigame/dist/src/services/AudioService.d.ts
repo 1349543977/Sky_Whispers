@@ -24,4 +24,3 @@ export declare class AudioService {
     private fadeBgmOut;
     destroy(): void;
 }
-//# sourceMappingURL=AudioService.d.ts.map

@@ -154,7 +154,7 @@ class ShopScene extends Scene_1.Scene {
             btn.render(this.renderer);
         }
         // Divider
-        this.renderer.fillRect(0, 96, w, 1, color_1.DesignTokens.colors.border, constants_1.LAYERS.UI);
+        this.renderer.fillRect(0, 96, w, 1, color_1.DesignTokens.colors.neutral200, constants_1.LAYERS.UI);
         if (this.loading) {
             this.skeleton.render(this.renderer);
         }
@@ -178,7 +178,7 @@ class ShopScene extends Scene_1.Scene {
         this.renderer.fillRoundRect(20, y + 8, 60, 60, color_1.DesignTokens.borderRadius.sm, 'rgba(0,0,0,0.05)', constants_1.LAYERS.UI);
         this.renderer.drawText('📦', 50, y + 38, '#000000', 24, 'center', 'middle', constants_1.LAYERS.UI);
         // Item name
-        this.renderer.drawText(item.name, 92, y + 16, color_1.DesignTokens.colors.text, color_1.DesignTokens.fontSize.md, 'left', 'top', constants_1.LAYERS.UI);
+        this.renderer.drawText(item.name, 92, y + 16, color_1.DesignTokens.colors.textPrimary, color_1.DesignTokens.fontSize.md, 'left', 'top', constants_1.LAYERS.UI);
         // Item description (truncated)
         const desc = item.description.length > 20 ? item.description.substring(0, 20) + '...' : item.description;
         this.renderer.drawText(desc, 92, y + 36, color_1.DesignTokens.colors.textSecondary, color_1.DesignTokens.fontSize.xs, 'left', 'top', constants_1.LAYERS.UI);

@@ -50,7 +50,7 @@ class PlantCard {
             const stageVisual = this.plantType.stages[this.plantType.stages.length - 1];
             renderer.drawText('🌱', this.x + this.width / 2, this.y + 8 + spriteArea / 2, (_b = stageVisual === null || stageVisual === void 0 ? void 0 : stageVisual.color_primary) !== null && _b !== void 0 ? _b : color_1.DesignTokens.colors.secondary, 24, 'center', 'middle', constants_1.LAYERS.UI);
             // Name
-            renderer.drawText(this.plantType.name, this.x + this.width / 2, this.y + this.width + 4, color_1.DesignTokens.colors.text, color_1.DesignTokens.fontSize.xs, 'center', 'top', constants_1.LAYERS.UI);
+            renderer.drawText(this.plantType.name, this.x + this.width / 2, this.y + this.width + 4, color_1.DesignTokens.colors.textPrimary, color_1.DesignTokens.fontSize.xs, 'center', 'top', constants_1.LAYERS.UI);
             // Rarity badge
             renderer.fillRoundRect(this.x + 4, this.y + 4, 24, 14, 7, rarityColor, constants_1.LAYERS.UI);
             renderer.drawText(this.plantType.rarity.charAt(0).toUpperCase(), this.x + 16, this.y + 11, '#FFFFFF', 8, 'center', 'middle', constants_1.LAYERS.UI);
@@ -66,7 +66,7 @@ class PlantCard {
                 ctx.textBaseline = 'middle';
                 ctx.fillText('?', this.x + this.width / 2, this.y + this.width / 2);
             });
-            renderer.drawText('???', this.x + this.width / 2, this.y + this.width + 4, color_1.DesignTokens.colors.textLight, color_1.DesignTokens.fontSize.xs, 'center', 'top', constants_1.LAYERS.UI);
+            renderer.drawText('???', this.x + this.width / 2, this.y + this.width + 4, color_1.DesignTokens.colors.textTertiary, color_1.DesignTokens.fontSize.xs, 'center', 'top', constants_1.LAYERS.UI);
         }
     }
     handleTap(x, y) {

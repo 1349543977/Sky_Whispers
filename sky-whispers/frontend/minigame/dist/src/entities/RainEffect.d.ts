@@ -2,7 +2,9 @@ import { Renderer } from '../core/Renderer';
 import { ParticleSystemConfig } from '../types';
 export declare class RainEffect {
     private particles;
-    private splashes;
+    private ringSplashes;
+    private splashParticles;
+    private puddles;
     private config;
     private emitAccumulator;
     private screenWidth;
@@ -10,12 +12,24 @@ export declare class RainEffect {
     private groundY;
     private active;
     private windAngle;
+    private mistAlpha;
+    private puddleTimer;
+    private static readonly RING_SPLASH_LIFE;
+    private static readonly RING_SPLASH_MAX_RADIUS;
+    private static readonly SPLASH_PARTICLE_LIFE;
+    private static readonly SPLASH_PARTICLE_COUNT_MIN;
+    private static readonly SPLASH_PARTICLE_COUNT_MAX;
+    private static readonly PUDDLE_MAX_LIFE;
+    private static readonly PUDDLE_SPAWN_INTERVAL;
+    private static readonly MIST_TARGET_ALPHA;
+    private static readonly MIST_FADE_SPEED;
+    private static readonly GLOW_RADIUS;
     constructor(screenWidth: number, screenHeight: number, groundY: number, config?: Partial<ParticleSystemConfig>);
     update(dt: number): void;
     render(renderer: Renderer): void;
     private emitParticle;
+    private createSplash;
     setWindAngle(angle: number): void;
     setActive(active: boolean): void;
     get isActive(): boolean;
 }
-//# sourceMappingURL=RainEffect.d.ts.map

@@ -19,4 +19,3 @@ export declare class Scheduler {
     get isRunning(): boolean;
     private tick;
 }
-//# sourceMappingURL=Scheduler.d.ts.map

@@ -24,4 +24,3 @@ export declare class Game {
     getInput(): Input;
     getSceneManager(): SceneManager;
 }
-//# sourceMappingURL=Game.d.ts.map

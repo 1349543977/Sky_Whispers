@@ -18,4 +18,3 @@ export declare class SocialSystem {
     getUnclaimedGiftCount(): number;
     destroy(): void;
 }
-//# sourceMappingURL=SocialSystem.d.ts.map

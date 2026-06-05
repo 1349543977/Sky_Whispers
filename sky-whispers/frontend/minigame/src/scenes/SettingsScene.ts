@@ -64,7 +64,7 @@ export class SettingsScene extends Scene {
       height: 32,
       text: this.bgmEnabled ? '开启' : '关闭',
       fontSize: DesignTokens.fontSize.xs,
-      bgColor: this.bgmEnabled ? DesignTokens.colors.success : DesignTokens.colors.textLight,
+      bgColor: this.bgmEnabled ? DesignTokens.colors.success : DesignTokens.colors.textTertiary,
       borderRadius: 16,
       onTap: () => this.toggleBgm(),
     });
@@ -76,7 +76,7 @@ export class SettingsScene extends Scene {
       height: 32,
       text: this.sfxEnabled ? '开启' : '关闭',
       fontSize: DesignTokens.fontSize.xs,
-      bgColor: this.sfxEnabled ? DesignTokens.colors.success : DesignTokens.colors.textLight,
+      bgColor: this.sfxEnabled ? DesignTokens.colors.success : DesignTokens.colors.textTertiary,
       borderRadius: 16,
       onTap: () => this.toggleSfx(),
     });
@@ -101,7 +101,7 @@ export class SettingsScene extends Scene {
       text: '关于云端气象局',
       fontSize: DesignTokens.fontSize.md,
       bgColor: DesignTokens.colors.surface,
-      textColor: DesignTokens.colors.text,
+      textColor: DesignTokens.colors.textPrimary,
       borderRadius: DesignTokens.borderRadius.md,
       onTap: () => this.showAbout(),
     });
@@ -114,7 +114,7 @@ export class SettingsScene extends Scene {
       text: '帮助与反馈',
       fontSize: DesignTokens.fontSize.md,
       bgColor: DesignTokens.colors.surface,
-      textColor: DesignTokens.colors.text,
+      textColor: DesignTokens.colors.textPrimary,
       borderRadius: DesignTokens.borderRadius.md,
       onTap: () => this.showHelp(),
     });
@@ -211,7 +211,7 @@ export class SettingsScene extends Scene {
     this.locationButton.render(this.renderer);
 
     // Divider
-    this.renderer.fillRect(12, 220, w - 24, 1, DesignTokens.colors.border, LAYERS.UI);
+    this.renderer.fillRect(12, 220, w - 24, 1, DesignTokens.colors.neutral200, LAYERS.UI);
 
     // About & Help
     this.aboutButton.render(this.renderer);
@@ -222,7 +222,7 @@ export class SettingsScene extends Scene {
       'v1.0.0',
       w / 2,
       h - 40,
-      DesignTokens.colors.textLight,
+      DesignTokens.colors.textTertiary,
       DesignTokens.fontSize.xs,
       'center',
       'middle',
@@ -237,7 +237,7 @@ export class SettingsScene extends Scene {
       label,
       16,
       y + 16,
-      DesignTokens.colors.text,
+      DesignTokens.colors.textPrimary,
       DesignTokens.fontSize.md,
       'left',
       'middle',

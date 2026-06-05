@@ -27,4 +27,3 @@ export declare class PlantCard {
     setGrowthProgress(progress: number): void;
     setPosition(x: number, y: number): void;
 }
-//# sourceMappingURL=PlantCard.d.ts.map

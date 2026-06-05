@@ -17,6 +17,7 @@ export declare class Dialog {
     private onCancel?;
     private visible;
     private fadeProgress;
+    private animStartTime;
     private confirmButton;
     private cancelButton;
     private dialogWidth;
@@ -31,4 +32,3 @@ export declare class Dialog {
     isVisible(): boolean;
     getButtons(): Button[];
 }
-//# sourceMappingURL=Dialog.d.ts.map

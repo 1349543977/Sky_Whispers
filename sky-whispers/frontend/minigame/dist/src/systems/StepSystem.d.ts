@@ -18,4 +18,3 @@ export declare class StepSystem {
     isSyncedToday(): boolean;
     destroy(): void;
 }
-//# sourceMappingURL=StepSystem.d.ts.map

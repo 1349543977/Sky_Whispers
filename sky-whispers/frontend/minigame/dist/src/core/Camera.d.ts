@@ -27,4 +27,3 @@ export declare class Camera {
     updateScreenSize(width: number, height: number): void;
     private clampPosition;
 }
-//# sourceMappingURL=Camera.d.ts.map

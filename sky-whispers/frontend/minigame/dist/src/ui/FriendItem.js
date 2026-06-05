@@ -50,7 +50,7 @@ class FriendItem {
         // Online indicator
         renderer.drawCircle(this.x + 40, this.y + this.height / 2 + 12, 4, color_1.DesignTokens.colors.success, true, constants_1.LAYERS.UI);
         // Name
-        renderer.drawText(this.friendship.friend_info.nickname, this.x + 54, this.y + 14, color_1.DesignTokens.colors.text, color_1.DesignTokens.fontSize.md, 'left', 'top', constants_1.LAYERS.UI);
+        renderer.drawText(this.friendship.friend_info.nickname, this.x + 54, this.y + 14, color_1.DesignTokens.colors.textPrimary, color_1.DesignTokens.fontSize.md, 'left', 'top', constants_1.LAYERS.UI);
         // Level
         renderer.drawText(`Lv.${this.friendship.friend_info.level}`, this.x + 54, this.y + 32, color_1.DesignTokens.colors.textSecondary, color_1.DesignTokens.fontSize.xs, 'left', 'top', constants_1.LAYERS.UI);
         // Buttons

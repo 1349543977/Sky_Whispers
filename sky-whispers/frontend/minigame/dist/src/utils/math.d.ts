@@ -16,4 +16,8 @@ export declare function smoothStep(edge0: number, edge1: number, x: number): num
 export declare function pointInRect(px: number, py: number, rx: number, ry: number, rw: number, rh: number): boolean;
 export declare function pointInCircle(px: number, py: number, cx: number, cy: number, radius: number): boolean;
 export declare function rectIntersect(ax: number, ay: number, aw: number, ah: number, bx: number, by: number, bw: number, bh: number): boolean;
-//# sourceMappingURL=math.d.ts.map
+export declare function easeOutBack(t: number): number;
+export declare function easeOutElastic(t: number): number;
+export declare function easeOutCubic(t: number): number;
+export declare function easeInOutCubic(t: number): number;
+export declare function easeOutQuart(t: number): number;

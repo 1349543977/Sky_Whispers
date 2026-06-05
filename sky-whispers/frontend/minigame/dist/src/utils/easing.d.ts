@@ -15,4 +15,3 @@ export declare const easeInOutBounce: EasingFunction;
 export declare const easeOutBack: EasingFunction;
 export declare const easeInBack: EasingFunction;
 export declare const easingMap: Record<string, EasingFunction>;
-//# sourceMappingURL=easing.d.ts.map

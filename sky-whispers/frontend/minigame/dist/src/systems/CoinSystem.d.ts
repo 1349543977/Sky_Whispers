@@ -23,4 +23,3 @@ export declare class CoinSystem {
     getGenerationRate(): number;
     calculateOfflineEarnings(offlineSeconds: number): number;
 }
-//# sourceMappingURL=CoinSystem.d.ts.map

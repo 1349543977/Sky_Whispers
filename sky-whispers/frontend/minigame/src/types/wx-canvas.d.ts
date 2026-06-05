@@ -25,6 +25,7 @@ interface CanvasRenderingContext2D {
   shadowBlur: number;
   shadowOffsetX: number;
   shadowOffsetY: number;
+  filter: string;
 
   fillRect(x: number, y: number, w: number, h: number): void;
   strokeRect(x: number, y: number, w: number, h: number): void;

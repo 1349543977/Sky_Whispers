@@ -24,4 +24,3 @@ export declare class FriendItem {
     setPosition(x: number, y: number): void;
     getButtons(): Button[];
 }
-//# sourceMappingURL=FriendItem.d.ts.map

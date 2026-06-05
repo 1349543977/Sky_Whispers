@@ -41,4 +41,3 @@ export declare class Input {
     getActiveTouches(): TouchPoint[];
 }
 export {};
-//# sourceMappingURL=Input.d.ts.map

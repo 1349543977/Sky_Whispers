@@ -31,7 +31,15 @@ export function Header({ className }: HeaderProps) {
   const { admin, logout } = useAuth();
 
   return (
-    <header className={`flex items-center h-16 border-b bg-card px-4 md:px-6 gap-4 ${className || ""}`}>
+    <header
+      className={`flex items-center h-16 border-b px-4 md:px-6 gap-4 ${className || ""}`}
+      style={{
+        background: "rgba(250, 251, 253, 0.8)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderColor: "var(--sky-border)",
+      }}
+    >
       {/* Mobile nav */}
       <MobileNav />
 
@@ -40,11 +48,18 @@ export function Header({ className }: HeaderProps) {
 
       {/* Search */}
       <div className="flex-1 max-w-md ml-auto md:ml-0">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors duration-200"
+            style={{ color: "var(--sky-text-secondary)" }}
+          />
           <Input
             placeholder="搜索用户、商品、活动..."
-            className="pl-9 bg-muted/50 border-0 focus-visible:ring-1"
+            className="pl-9 border-0 transition-all duration-200 focus-visible:ring-2"
+            style={{
+              background: "var(--sky-surface-warm)",
+              borderRadius: "var(--radius-lg)",
+              focusVisibleRingColor: "var(--sky-primary)",
+            }}
           />
         </div>
       </div>
@@ -57,15 +72,22 @@ export function Header({ className }: HeaderProps) {
           size="icon"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
           aria-label="切换主题"
+          className="relative overflow-hidden transition-all duration-300"
         >
-          <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+          <Sun className="h-5 w-5 rotate-0 scale-100 transition-all duration-500 ease-in-out dark:-rotate-90 dark:scale-0" />
+          <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all duration-500 ease-in-out dark:rotate-0 dark:scale-100" />
         </Button>
 
         {/* Notifications */}
         <Button variant="ghost" size="icon" className="relative" aria-label="通知">
           <Bell className="h-5 w-5" />
-          <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground flex items-center justify-center">
+          <span
+            className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+            style={{
+              background: "var(--sky-accent)",
+              color: "#FFFFFF",
+            }}
+          >
             3
           </span>
         </Button>
@@ -84,7 +106,7 @@ export function Header({ className }: HeaderProps) {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{admin?.username || "管理员"}</p>
-                <p className="text-xs leading-none text-muted-foreground">
+                <p className="text-xs leading-none" style={{ color: "var(--sky-text-secondary)" }}>
                   {admin ? ADMIN_ROLE_LABELS[admin.role] || admin.role : ""}
                 </p>
               </div>

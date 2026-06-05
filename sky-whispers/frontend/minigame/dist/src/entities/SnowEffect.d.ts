@@ -2,18 +2,32 @@ import { Renderer } from '../core/Renderer';
 import { ParticleSystemConfig } from '../types';
 export declare class SnowEffect {
     private particles;
+    private accumulations;
     private config;
     private emitAccumulator;
     private screenWidth;
     private screenHeight;
     private active;
     private windSpeed;
+    private accumulationTimer;
+    private static readonly DRIFT_AMPLITUDE_MIN;
+    private static readonly DRIFT_AMPLITUDE_MAX;
+    private static readonly DRIFT_FREQUENCY_MIN;
+    private static readonly DRIFT_FREQUENCY_MAX;
+    private static readonly SPARKLE_INTERVAL_MIN;
+    private static readonly SPARKLE_INTERVAL_MAX;
+    private static readonly SPARKLE_DURATION;
+    private static readonly SPARKLE_SIZE_THRESHOLD;
+    private static readonly GLOW_OUTER_RADIUS;
+    private static readonly ACCUMULATION_SPAWN_INTERVAL;
+    private static readonly ACCUMULATION_MAX_LIFE;
+    private static readonly ACCUMULATION_MAX_COUNT;
     constructor(screenWidth: number, screenHeight: number, config?: Partial<ParticleSystemConfig>);
     update(dt: number): void;
     render(renderer: Renderer): void;
     private emitParticle;
+    private createAccumulation;
     setWindSpeed(speed: number): void;
     setActive(active: boolean): void;
     get isActive(): boolean;
 }
-//# sourceMappingURL=SnowEffect.d.ts.map

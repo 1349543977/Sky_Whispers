@@ -30,4 +30,3 @@ export declare class SocialScene extends Scene {
     render(): void;
     onUnload(): void;
 }
-//# sourceMappingURL=SocialScene.d.ts.map

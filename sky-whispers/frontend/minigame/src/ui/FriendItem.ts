@@ -111,7 +111,7 @@ export class FriendItem {
       this.friendship.friend_info.nickname,
       this.x + 54,
       this.y + 14,
-      DesignTokens.colors.text,
+      DesignTokens.colors.textPrimary,
       DesignTokens.fontSize.md,
       'left',
       'top',

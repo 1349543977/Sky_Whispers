@@ -9,14 +9,23 @@ export declare class BootScene extends Scene {
     private loadingText;
     private loadingSteps;
     private currentStep;
+    private elapsedTime;
+    private dotCount;
+    private dotTimer;
+    private clouds;
+    private particles;
+    private sparkleTimer;
+    private sparkles;
     constructor(renderer: Renderer, input: Input);
     onLoad(): Promise<void>;
     private setupLoadingSteps;
     private delay;
+    private initClouds;
+    private initParticles;
+    private spawnParticle;
     private getSceneManager;
-    update(_dt: number): void;
+    update(dt: number): void;
     fixedUpdate(_dt: number): void;
     render(): void;
     onUnload(): void;
 }
-//# sourceMappingURL=BootScene.d.ts.map

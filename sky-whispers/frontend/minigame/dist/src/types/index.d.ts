@@ -544,4 +544,3 @@ export interface EventPayloads {
     [GameEvent.LoadingStart]: string;
     [GameEvent.LoadingEnd]: string;
 }
-//# sourceMappingURL=index.d.ts.map

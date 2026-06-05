@@ -8,6 +8,7 @@ export interface ProgressBarOptions {
     max?: number;
     value: number;
     fillColor?: string;
+    fillGradientEnd?: string;
     bgColor?: string;
     borderColor?: string;
     borderRadius?: number;
@@ -25,18 +26,22 @@ export declare class ProgressBar {
     private value;
     private displayValue;
     private fillColor;
+    private fillGradientEnd;
     private bgColor;
     private borderColor;
     private borderRadius;
     private showText;
     private textColor;
     private fontSize;
+    private shimmerOffset;
+    private glowPulse;
     constructor(options: ProgressBarOptions);
     update(dt: number): void;
     render(renderer: Renderer): void;
+    private renderShimmer;
+    private renderLeadingGlow;
     setValue(value: number): void;
     getValue(): number;
     setPosition(x: number, y: number): void;
     setFillColor(color: string): void;
 }
-//# sourceMappingURL=ProgressBar.d.ts.map

@@ -16,6 +16,7 @@ export declare class GiftPopup {
     private onClose?;
     private visible;
     private fadeProgress;
+    private animStartTime;
     private selectedGiftType;
     private selectedFriendIndex;
     private message;
@@ -24,9 +25,15 @@ export declare class GiftPopup {
     private giftTypeButtons;
     private popupWidth;
     private popupHeight;
+    private giftShakePhase;
+    private giftOpened;
+    private sparkles;
     constructor(options: GiftPopupOptions);
     update(dt: number): void;
     render(renderer: Renderer): void;
+    private renderGiftBox;
+    private triggerGiftShake;
+    private spawnSparkles;
     private send;
     show(): void;
     hide(): void;
@@ -34,4 +41,3 @@ export declare class GiftPopup {
     setFriends(friends: Friendship[]): void;
     getAllButtons(): Button[];
 }
-//# sourceMappingURL=GiftPopup.d.ts.map

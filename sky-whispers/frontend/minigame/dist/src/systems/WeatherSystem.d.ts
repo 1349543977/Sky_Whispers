@@ -21,4 +21,3 @@ export declare class WeatherSystem {
     getWindPower(): number;
     destroy(): void;
 }
-//# sourceMappingURL=WeatherSystem.d.ts.map

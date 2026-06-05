@@ -45,7 +45,7 @@ class SpriteCard {
             renderer.drawCircle(cx - 5, cy - 3, 1.5, '#2C3E50', true, constants_1.LAYERS.UI);
             renderer.drawCircle(cx + 5, cy - 3, 1.5, '#2C3E50', true, constants_1.LAYERS.UI);
             // Name
-            renderer.drawText(this.spriteType.name, this.x + this.width / 2, this.y + spriteArea + 16, color_1.DesignTokens.colors.text, color_1.DesignTokens.fontSize.xs, 'center', 'top', constants_1.LAYERS.UI);
+            renderer.drawText(this.spriteType.name, this.x + this.width / 2, this.y + spriteArea + 16, color_1.DesignTokens.colors.textPrimary, color_1.DesignTokens.fontSize.xs, 'center', 'top', constants_1.LAYERS.UI);
             // Level badge
             renderer.fillRoundRect(this.x + 4, this.y + 4, 28, 14, 7, rarityColor, constants_1.LAYERS.UI);
             renderer.drawText(`Lv${this.level}`, this.x + 18, this.y + 11, '#FFFFFF', 8, 'center', 'middle', constants_1.LAYERS.UI);
@@ -62,7 +62,7 @@ class SpriteCard {
                 ctx.textBaseline = 'middle';
                 ctx.fillText('?', this.x + this.width / 2, this.y + this.width / 2);
             });
-            renderer.drawText('???', this.x + this.width / 2, this.y + this.width + 4, color_1.DesignTokens.colors.textLight, color_1.DesignTokens.fontSize.xs, 'center', 'top', constants_1.LAYERS.UI);
+            renderer.drawText('???', this.x + this.width / 2, this.y + this.width + 4, color_1.DesignTokens.colors.textTertiary, color_1.DesignTokens.fontSize.xs, 'center', 'top', constants_1.LAYERS.UI);
         }
     }
     handleTap(x, y) {

@@ -7,6 +7,7 @@ import { EventManager } from './EventManager';
 import { GameEvent } from '../types';
 import { Renderer } from './Renderer';
 import { Input } from './Input';
+import { LAYERS } from '../utils/constants';
 
 export abstract class Scene {
   protected renderer: Renderer;
@@ -64,6 +65,9 @@ export class SceneManager {
   private renderer: Renderer;
   private input: Input;
   private eventManager: EventManager;
+  private transitionAlpha: number = 0;
+  private isTransitioning: boolean = false;
+  private transitionCallback: (() => void) | null = null;
 
   constructor(renderer: Renderer, input: Input) {
     this.renderer = renderer;
@@ -163,6 +167,52 @@ export class SceneManager {
     return name ? this.scenes.get(name) ?? null : null;
   }
 
+  async switchWithTransition(
+    sceneName: string,
+    type: 'fade' | 'slideLeft' | 'slideRight' | 'slideUp' = 'fade',
+  ): Promise<void> {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+
+    const fadeOutDuration = 300;
+    const startTime = Date.now();
+
+    return new Promise((resolve) => {
+      const fadeOut = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / fadeOutDuration, 1);
+        this.transitionAlpha = progress;
+
+        if (progress < 1) {
+          requestAnimationFrame(fadeOut);
+        } else {
+          // Switch scene at peak
+          this.switchTo(sceneName as SceneName);
+
+          // Fade in new scene
+          const fadeInStart = Date.now();
+          const fadeInDuration = 400;
+
+          const fadeIn = () => {
+            const elapsed = Date.now() - fadeInStart;
+            const progress = Math.min(elapsed / fadeInDuration, 1);
+            this.transitionAlpha = 1 - progress;
+
+            if (progress < 1) {
+              requestAnimationFrame(fadeIn);
+            } else {
+              this.transitionAlpha = 0;
+              this.isTransitioning = false;
+              resolve();
+            }
+          };
+          requestAnimationFrame(fadeIn);
+        }
+      };
+      requestAnimationFrame(fadeOut);
+    });
+  }
+
   update(dt: number): void {
     const scene = this.getCurrent();
     if (scene && scene.isActive) {
@@ -181,6 +231,18 @@ export class SceneManager {
     const scene = this.getCurrent();
     if (scene && scene.isActive) {
       scene.render();
+    }
+
+    // Draw transition overlay if transitioning
+    if (this.transitionAlpha > 0) {
+      this.renderer.setAlpha(
+        this.transitionAlpha,
+        LAYERS.OVERLAY,
+        (ctx) => {
+          ctx.fillStyle = '#FAFBFD';
+          ctx.fillRect(0, 0, this.renderer.width, this.renderer.height);
+        },
+      );
     }
   }
 }

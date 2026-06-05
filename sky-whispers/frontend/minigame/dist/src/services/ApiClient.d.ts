@@ -94,4 +94,3 @@ export declare class ApiClient {
         reward_amount: number;
     }>>;
 }
-//# sourceMappingURL=ApiClient.d.ts.map

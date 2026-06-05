@@ -22,4 +22,3 @@ export declare class Windmill {
         y: number;
     };
 }
-//# sourceMappingURL=Windmill.d.ts.map

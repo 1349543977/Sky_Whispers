@@ -8,12 +8,15 @@ export declare class StepWidget {
     private width;
     private height;
     private progressBar;
+    private pulseScale;
+    private pulseTarget;
+    private lastWindPower;
     constructor(x: number, y: number);
     update(dt: number): void;
     render(renderer: Renderer): void;
+    private drawShoeIcon;
     private formatSteps;
     setSteps(steps: number): void;
     setWindPower(power: number): void;
     setPosition(x: number, y: number): void;
 }
-//# sourceMappingURL=StepWidget.d.ts.map

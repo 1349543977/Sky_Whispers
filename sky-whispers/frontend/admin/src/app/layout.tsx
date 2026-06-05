@@ -33,7 +33,17 @@ export default function RootLayout({
               <Sidebar />
               <div className="flex-1 flex flex-col overflow-hidden">
                 <Header />
-                <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-background">
+                <main
+                  className="flex-1 overflow-y-auto p-4 md:p-6 page-transition-enter"
+                  style={{
+                    background: "var(--sky-surface)",
+                    backgroundImage: `
+                      radial-gradient(ellipse at 20% 50%, rgba(126, 181, 214, 0.04) 0%, transparent 50%),
+                      radial-gradient(ellipse at 80% 20%, rgba(140, 198, 165, 0.04) 0%, transparent 50%),
+                      radial-gradient(ellipse at 50% 80%, rgba(242, 197, 124, 0.03) 0%, transparent 50%)
+                    `,
+                  }}
+                >
                   {children}
                 </main>
               </div>

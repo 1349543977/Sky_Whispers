@@ -39,4 +39,3 @@ export declare class Tween {
 }
 export declare function tween(target: Record<string, number>): Tween;
 export {};
-//# sourceMappingURL=Tween.d.ts.map

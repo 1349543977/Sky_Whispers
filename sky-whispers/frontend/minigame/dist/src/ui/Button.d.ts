@@ -9,11 +9,13 @@ export interface ButtonOptions {
     fontSize?: number;
     textColor?: string;
     bgColor?: string;
+    gradientEnd?: string;
     pressedBgColor?: string;
     disabledBgColor?: string;
     borderRadius?: number;
     disabled?: boolean;
     loading?: boolean;
+    icon?: string;
     onTap?: () => void;
 }
 export declare class Button {
@@ -25,19 +27,28 @@ export declare class Button {
     private fontSize;
     private textColor;
     private bgColor;
+    private gradientEnd;
     private pressedBgColor;
     private disabledBgColor;
     private borderRadius;
     private disabled;
     private loading;
+    private icon;
     private pressed;
     private onTap?;
     private scale;
     private targetScale;
+    private bounceProgress;
+    private bounceStartTime;
+    private shimmerOffset;
+    private spinnerAngle;
+    private shimmerDots;
     constructor(options: ButtonOptions);
     update(dt: number): void;
     render(renderer: Renderer): void;
-    private renderSpinner;
+    private renderShimmer;
+    private renderSpinnerDots;
+    private renderContent;
     handleTouchStart(x: number, y: number): boolean;
     handleTouchEnd(x: number, y: number): boolean;
     handleTouchMove(x: number, y: number): void;
@@ -48,4 +59,3 @@ export declare class Button {
     setPosition(x: number, y: number): void;
     containsPoint(px: number, py: number): boolean;
 }
-//# sourceMappingURL=Button.d.ts.map

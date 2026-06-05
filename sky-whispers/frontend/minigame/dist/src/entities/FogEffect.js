@@ -1,6 +1,6 @@
 "use strict";
 // ============================================================
-// FogEffect - Fog overlay with drifting layers
+// FogEffect - Layered, drifting fog with organic shapes
 // ============================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FogEffect = void 0;
@@ -11,33 +11,49 @@ class FogEffect {
         this.layers = [];
         this.active = true;
         this.globalAlpha = 0.4;
+        this.time = 0;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         this.initLayers();
     }
     initLayers() {
         this.layers = [];
-        for (let i = 0; i < 5; i++) {
+        const layerColors = [constants_1.COLORS.FOG, constants_1.COLORS.FOG, constants_1.COLORS.FOG_DENSE, constants_1.COLORS.FOG];
+        for (let i = 0; i < FogEffect.LAYER_COUNT; i++) {
+            const speed = (0, math_1.randomRange)(FogEffect.SPEED_MIN, FogEffect.SPEED_MAX)
+                * (i % 2 === 0 ? 1 : -1);
+            const baseY = this.screenHeight * (0.25 + i * 0.18);
             this.layers.push({
                 x: (0, math_1.randomRange)(-this.screenWidth * 0.3, this.screenWidth),
-                y: (0, math_1.randomRange)(this.screenHeight * 0.2, this.screenHeight * 0.8),
-                width: (0, math_1.randomRange)(this.screenWidth * 0.6, this.screenWidth * 1.2),
-                height: (0, math_1.randomRange)(60, 120),
-                speed: (0, math_1.randomRange)(5, 15) * (i % 2 === 0 ? 1 : -1),
-                alpha: (0, math_1.randomRange)(0.15, 0.35),
+                y: baseY,
+                baseY,
+                width: (0, math_1.randomRange)(this.screenWidth * 0.8, this.screenWidth * 1.5),
+                height: (0, math_1.randomRange)(50, 100),
+                speed,
+                alpha: (0, math_1.randomRange)(FogEffect.ALPHA_MIN, FogEffect.ALPHA_MAX),
+                wobbleSeed: (0, math_1.randomRange)(0, 100),
+                bobPhase: (0, math_1.randomRange)(0, Math.PI * 2),
+                bobAmplitude: (0, math_1.randomRange)(FogEffect.BOB_AMPLITUDE_MIN, FogEffect.BOB_AMPLITUDE_MAX),
+                bobSpeed: (0, math_1.randomRange)(FogEffect.BOB_SPEED_MIN, FogEffect.BOB_SPEED_MAX),
+                color: layerColors[i],
             });
         }
     }
     update(dt) {
         if (!this.active)
             return;
+        this.time += dt;
         for (const layer of this.layers) {
+            // Horizontal drift
             layer.x += layer.speed * dt;
-            // Wrap around
-            if (layer.speed > 0 && layer.x > this.screenWidth) {
+            // Vertical bob
+            layer.bobPhase += layer.bobSpeed * dt;
+            layer.y = layer.baseY + Math.sin(layer.bobPhase) * layer.bobAmplitude;
+            // Seamless wrap around screen edges
+            if (layer.speed > 0 && layer.x > this.screenWidth + layer.width * 0.2) {
                 layer.x = -layer.width;
             }
-            else if (layer.speed < 0 && layer.x + layer.width < 0) {
+            else if (layer.speed < 0 && layer.x + layer.width < -layer.width * 0.2) {
                 layer.x = this.screenWidth;
             }
         }
@@ -46,11 +62,36 @@ class FogEffect {
         if (!this.active)
             return;
         for (const layer of this.layers) {
-            renderer.setAlpha(layer.alpha * this.globalAlpha, constants_1.LAYERS.EFFECTS, (ctx) => {
-                ctx.fillStyle = constants_1.COLORS.FOG;
-                // Draw fog as a soft ellipse
+            const effectiveAlpha = layer.alpha * this.globalAlpha;
+            // Draw fog as organic blob shape using bezier curves
+            renderer.setAlpha(effectiveAlpha, constants_1.LAYERS.EFFECTS, (ctx) => {
+                ctx.fillStyle = layer.color;
                 ctx.beginPath();
-                ctx.ellipse(layer.x + layer.width / 2, layer.y + layer.height / 2, layer.width / 2, layer.height / 2, 0, 0, Math.PI * 2);
+                const cx = layer.x + layer.width / 2;
+                const cy = layer.y + layer.height / 2;
+                const rx = layer.width / 2;
+                const ry = layer.height / 2;
+                const points = FogEffect.ORGANIC_POINTS;
+                // Generate organic shape points with wobble
+                const shapePoints = [];
+                for (let i = 0; i < points; i++) {
+                    const angle = (i / points) * Math.PI * 2;
+                    const wobbleOffset = Math.sin(angle * 3 + layer.wobbleSeed + this.time * 0.2)
+                        * FogEffect.WOBBLE_AMOUNT;
+                    shapePoints.push({
+                        x: cx + Math.cos(angle) * (rx + wobbleOffset),
+                        y: cy + Math.sin(angle) * (ry + wobbleOffset * 0.5),
+                    });
+                }
+                // Draw smooth closed curve through points using quadratic bezier
+                ctx.moveTo((shapePoints[points - 1].x + shapePoints[0].x) / 2, (shapePoints[points - 1].y + shapePoints[0].y) / 2);
+                for (let i = 0; i < points; i++) {
+                    const next = shapePoints[(i + 1) % points];
+                    const midX = (shapePoints[i].x + next.x) / 2;
+                    const midY = (shapePoints[i].y + next.y) / 2;
+                    ctx.quadraticCurveTo(shapePoints[i].x, shapePoints[i].y, midX, midY);
+                }
+                ctx.closePath();
                 ctx.fill();
             });
         }
@@ -69,4 +110,15 @@ class FogEffect {
     }
 }
 exports.FogEffect = FogEffect;
+FogEffect.LAYER_COUNT = 4;
+FogEffect.ALPHA_MIN = 0.05;
+FogEffect.ALPHA_MAX = 0.2;
+FogEffect.BOB_AMPLITUDE_MIN = 2;
+FogEffect.BOB_AMPLITUDE_MAX = 6;
+FogEffect.BOB_SPEED_MIN = 0.3;
+FogEffect.BOB_SPEED_MAX = 0.8;
+FogEffect.SPEED_MIN = 3;
+FogEffect.SPEED_MAX = 12;
+FogEffect.ORGANIC_POINTS = 10;
+FogEffect.WOBBLE_AMOUNT = 8;
 //# sourceMappingURL=FogEffect.js.map

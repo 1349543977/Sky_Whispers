@@ -20,4 +20,3 @@ export declare class SpriteSpawnSystem {
     getAvailableTypes(): SpriteType[];
     destroy(): void;
 }
-//# sourceMappingURL=SpriteSpawnSystem.d.ts.map

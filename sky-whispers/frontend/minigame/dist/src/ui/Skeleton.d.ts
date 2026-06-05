@@ -18,11 +18,10 @@ export declare class Skeleton {
     private rowGap;
     private shimmerOffset;
     private active;
+    private pulsePhase;
     constructor(options: SkeletonOptions);
     update(dt: number): void;
     render(renderer: Renderer): void;
-    private drawRoundRectPath;
     setActive(active: boolean): void;
     setPosition(x: number, y: number): void;
 }
-//# sourceMappingURL=Skeleton.d.ts.map

@@ -1,5 +1,6 @@
 // ============================================================
-// Skeleton - Loading skeleton with shimmer animation
+// Skeleton - Loading skeleton with Cloud Whisper aesthetic
+// Shimmer sweep, pulse opacity, soft rounded shapes
 // ============================================================
 
 import { Renderer } from '../core/Renderer';
@@ -26,6 +27,7 @@ export class Skeleton {
   private rowGap: number;
   private shimmerOffset: number = 0;
   private active: boolean = true;
+  private pulsePhase: number = 0;
 
   constructor(options: SkeletonOptions) {
     this.x = options.x;
@@ -39,67 +41,71 @@ export class Skeleton {
 
   update(dt: number): void {
     if (!this.active) return;
+
+    // Shimmer sweep animation
     this.shimmerOffset += dt * 200;
     if (this.shimmerOffset > this.width + 100) {
       this.shimmerOffset = -100;
     }
+
+    // Pulse phase for subtle opacity variation
+    this.pulsePhase += dt * 2;
   }
 
   render(renderer: Renderer): void {
     if (!this.active) return;
 
+    // Subtle pulse opacity
+    const pulseAlpha = 0.85 + Math.sin(this.pulsePhase) * 0.08;
+
     for (let i = 0; i < this.rows; i++) {
       const rowY = this.y + i * (this.rowHeight + this.rowGap);
       const rowWidth = i === this.rows - 1 ? this.width * 0.6 : this.width;
 
-      // Base
-      renderer.fillRoundRect(
-        this.x,
-        rowY,
-        rowWidth,
-        this.rowHeight,
-        DesignTokens.borderRadius.sm,
-        '#E8E8E8',
-        LAYERS.UI,
-      );
+      // Base shape with soft color
+      renderer.setAlpha(pulseAlpha, LAYERS.UI, (ctx) => {
+        ctx.fillStyle = DesignTokens.colors.neutral200;
+        const r = Math.min(DesignTokens.borderRadius.md, rowWidth / 2, this.rowHeight / 2);
+        ctx.beginPath();
+        ctx.moveTo(this.x + r, rowY);
+        ctx.lineTo(this.x + rowWidth - r, rowY);
+        ctx.arcTo(this.x + rowWidth, rowY, this.x + rowWidth, rowY + r, r);
+        ctx.lineTo(this.x + rowWidth, rowY + this.rowHeight - r);
+        ctx.arcTo(this.x + rowWidth, rowY + this.rowHeight, this.x + rowWidth - r, rowY + this.rowHeight, r);
+        ctx.lineTo(this.x + r, rowY + this.rowHeight);
+        ctx.arcTo(this.x, rowY + this.rowHeight, this.x, rowY + this.rowHeight - r, r);
+        ctx.lineTo(this.x, rowY + r);
+        ctx.arcTo(this.x, rowY, this.x + r, rowY, r);
+        ctx.closePath();
+        ctx.fill();
+      });
 
-      // Shimmer highlight
+      // Shimmer highlight sweep
       const shimmerX = this.x + this.shimmerOffset;
       const shimmerWidth = 60;
       if (shimmerX + shimmerWidth > this.x && shimmerX < this.x + rowWidth) {
-        renderer.setAlpha(0.3, LAYERS.UI, (ctx) => {
+        renderer.setAlpha(0.3 * pulseAlpha, LAYERS.UI, (ctx) => {
           const gradient = ctx.createLinearGradient(shimmerX, rowY, shimmerX + shimmerWidth, rowY);
           gradient.addColorStop(0, 'rgba(255,255,255,0)');
           gradient.addColorStop(0.5, 'rgba(255,255,255,1)');
           gradient.addColorStop(1, 'rgba(255,255,255,0)');
           ctx.fillStyle = gradient;
-          this.drawRoundRectPath(ctx, this.x, rowY, rowWidth, this.rowHeight, DesignTokens.borderRadius.sm);
+          const r = Math.min(DesignTokens.borderRadius.md, rowWidth / 2, this.rowHeight / 2);
+          ctx.beginPath();
+          ctx.moveTo(this.x + r, rowY);
+          ctx.lineTo(this.x + rowWidth - r, rowY);
+          ctx.arcTo(this.x + rowWidth, rowY, this.x + rowWidth, rowY + r, r);
+          ctx.lineTo(this.x + rowWidth, rowY + this.rowHeight - r);
+          ctx.arcTo(this.x + rowWidth, rowY + this.rowHeight, this.x + rowWidth - r, rowY + this.rowHeight, r);
+          ctx.lineTo(this.x + r, rowY + this.rowHeight);
+          ctx.arcTo(this.x, rowY + this.rowHeight, this.x, rowY + this.rowHeight - r, r);
+          ctx.lineTo(this.x, rowY + r);
+          ctx.arcTo(this.x, rowY, this.x + r, rowY, r);
+          ctx.closePath();
           ctx.fill();
         });
       }
     }
-  }
-
-  private drawRoundRectPath(
-    ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    radius: number,
-  ): void {
-    const r = Math.min(radius, w / 2, h / 2);
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.arcTo(x + w, y, x + w, y + r, r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-    ctx.lineTo(x + r, y + h);
-    ctx.arcTo(x, y + h, x, y + h - r, r);
-    ctx.lineTo(x, y + r);
-    ctx.arcTo(x, y, x + r, y, r);
-    ctx.closePath();
   }
 
   setActive(active: boolean): void {

@@ -25,4 +25,3 @@ export declare class ShopScene extends Scene {
     private renderShopItem;
     onUnload(): void;
 }
-//# sourceMappingURL=ShopScene.d.ts.map

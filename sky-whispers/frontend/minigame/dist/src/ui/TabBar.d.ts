@@ -8,6 +8,13 @@ export declare class TabBar {
     private width;
     private height;
     private onTabChange?;
+    private indicatorProgress;
+    private previousTabIndex;
+    private currentTabIndex;
+    private indicatorAnimStart;
+    private bounceScale;
+    private bounceStartTime;
+    private safeAreaBottom;
     constructor(tabs: TabConfig[], screenWidth: number, screenHeight: number, onTabChange?: (tabId: string) => void);
     update(_dt: number): void;
     render(renderer: Renderer): void;
@@ -21,4 +28,3 @@ export declare class TabBar {
         y: number;
     };
 }
-//# sourceMappingURL=TabBar.d.ts.map

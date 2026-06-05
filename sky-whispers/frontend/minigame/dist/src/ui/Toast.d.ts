@@ -1,7 +1,9 @@
 import { Renderer } from '../core/Renderer';
+export type ToastType = 'success' | 'warning' | 'error' | 'info';
 export interface ToastOptions {
     text: string;
     icon?: string;
+    type?: ToastType;
     duration?: number;
     bgColor?: string;
     textColor?: string;
@@ -10,8 +12,10 @@ export interface ToastOptions {
 export declare class Toast {
     private text;
     private icon;
+    private type;
     private duration;
     private bgColor;
+    private gradientEnd;
     private textColor;
     private fontSize;
     private visible;
@@ -33,4 +37,3 @@ export declare class ToastManager {
     update(dt: number): void;
     render(renderer: Renderer): void;
 }
-//# sourceMappingURL=Toast.d.ts.map

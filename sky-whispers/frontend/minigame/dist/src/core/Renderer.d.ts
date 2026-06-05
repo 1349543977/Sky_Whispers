@@ -30,6 +30,19 @@ export declare class Renderer {
     drawImage(image: Canvas | ImageBitmap, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number, layer?: number): void;
     drawGradientRect(x: number, y: number, w: number, h: number, colorStart: string, colorEnd: string, vertical?: boolean, layer?: number): void;
     setAlpha(alpha: number, layer: number, drawFn: (ctx: CanvasRenderingContext2D) => void): void;
+    /** Draw a soft shadow beneath an element */
+    drawSoftShadow(cx: number, cy: number, rx: number, ry: number, blur: number, color: string, layer?: number): void;
+    /** Draw a radial gradient circle (for glows, halos) */
+    drawRadialGlow(cx: number, cy: number, innerRadius: number, outerRadius: number, innerColor: string, outerColor: string, layer?: number): void;
+    /** Draw a gradient-filled rounded rectangle */
+    fillGradientRoundRect(x: number, y: number, w: number, h: number, radius: number, colorStart: string, colorEnd: string, vertical?: boolean, layer?: number): void;
+    /** Draw text with a soft shadow */
+    fillTextWithShadow(text: string, x: number, y: number, color: string, shadowColor?: string, fontSize?: number, shadowBlur?: number, shadowOffsetY?: number, align?: CanvasTextAlign, baseline?: CanvasTextBaseline, layer?: number): void;
+    /** Draw a star/sparkle shape */
+    drawSparkle(cx: number, cy: number, size: number, color: string, alpha: number, layer?: number): void;
+    /** Draw a heart shape */
+    drawHeart(cx: number, cy: number, size: number, color: string, alpha: number, layer?: number): void;
+    /** Draw a wavy/organic shape (for clouds, bushes) */
+    drawOrganicBlob(cx: number, cy: number, rx: number, ry: number, wobble: number, color: string, alpha?: number, layer?: number): void;
     private drawRoundRectPath;
 }
-//# sourceMappingURL=Renderer.d.ts.map

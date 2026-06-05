@@ -292,6 +292,172 @@ export class Renderer {
     });
   }
 
+  /** Draw a soft shadow beneath an element */
+  drawSoftShadow(
+    cx: number, cy: number, rx: number, ry: number,
+    blur: number, color: string, layer: number = LAYERS.ENTITIES,
+  ): void {
+    this.addCommand({
+      layer,
+      draw: (ctx) => {
+        ctx.save();
+        ctx.filter = `blur(${blur}px)`;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      },
+    });
+  }
+
+  /** Draw a radial gradient circle (for glows, halos) */
+  drawRadialGlow(
+    cx: number, cy: number, innerRadius: number, outerRadius: number,
+    innerColor: string, outerColor: string, layer: number = LAYERS.EFFECTS,
+  ): void {
+    this.addCommand({
+      layer,
+      draw: (ctx) => {
+        const gradient = ctx.createRadialGradient(cx, cy, innerRadius, cx, cy, outerRadius);
+        gradient.addColorStop(0, innerColor);
+        gradient.addColorStop(1, outerColor);
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(cx, cy, outerRadius, 0, Math.PI * 2);
+        ctx.fill();
+      },
+    });
+  }
+
+  /** Draw a gradient-filled rounded rectangle */
+  fillGradientRoundRect(
+    x: number, y: number, w: number, h: number, radius: number,
+    colorStart: string, colorEnd: string, vertical: boolean = true,
+    layer: number = LAYERS.UI,
+  ): void {
+    this.addCommand({
+      layer,
+      draw: (ctx) => {
+        const gradient = vertical
+          ? ctx.createLinearGradient(x, y, x, y + h)
+          : ctx.createLinearGradient(x, y, x + w, y);
+        gradient.addColorStop(0, colorStart);
+        gradient.addColorStop(1, colorEnd);
+        ctx.fillStyle = gradient;
+        this.drawRoundRectPath(ctx, x, y, w, h, radius);
+        ctx.fill();
+      },
+    });
+  }
+
+  /** Draw text with a soft shadow */
+  fillTextWithShadow(
+    text: string, x: number, y: number,
+    color: string, shadowColor: string = 'rgba(26, 39, 56, 0.15)',
+    fontSize: number = 14, shadowBlur: number = 4, shadowOffsetY: number = 2,
+    align: CanvasTextAlign = 'left', baseline: CanvasTextBaseline = 'top',
+    layer: number = LAYERS.UI,
+  ): void {
+    this.addCommand({
+      layer,
+      draw: (ctx) => {
+        ctx.save();
+        ctx.font = `${fontSize}px -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif`;
+        ctx.textAlign = align;
+        ctx.textBaseline = baseline;
+        ctx.shadowColor = shadowColor;
+        ctx.shadowBlur = shadowBlur;
+        ctx.shadowOffsetY = shadowOffsetY;
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+        ctx.restore();
+      },
+    });
+  }
+
+  /** Draw a star/sparkle shape */
+  drawSparkle(
+    cx: number, cy: number, size: number, color: string, alpha: number,
+    layer: number = LAYERS.EFFECTS,
+  ): void {
+    this.addCommand({
+      layer,
+      draw: (ctx) => {
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        const spikes = 4;
+        const outerRadius = size;
+        const innerRadius = size * 0.4;
+        for (let i = 0; i < spikes * 2; i++) {
+          const radius = i % 2 === 0 ? outerRadius : innerRadius;
+          const angle = (i * Math.PI) / spikes - Math.PI / 2;
+          const px = cx + Math.cos(angle) * radius;
+          const py = cy + Math.sin(angle) * radius;
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      },
+    });
+  }
+
+  /** Draw a heart shape */
+  drawHeart(
+    cx: number, cy: number, size: number, color: string, alpha: number,
+    layer: number = LAYERS.EFFECTS,
+  ): void {
+    this.addCommand({
+      layer,
+      draw: (ctx) => {
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + size * 0.3);
+        ctx.bezierCurveTo(cx, cy, cx - size, cy, cx - size, cy + size * 0.3);
+        ctx.bezierCurveTo(cx - size, cy + size * 0.7, cx, cy + size, cx, cy + size * 1.2);
+        ctx.bezierCurveTo(cx, cy + size, cx + size, cy + size * 0.7, cx + size, cy + size * 0.3);
+        ctx.bezierCurveTo(cx + size, cy, cx, cy, cx, cy + size * 0.3);
+        ctx.fill();
+        ctx.restore();
+      },
+    });
+  }
+
+  /** Draw a wavy/organic shape (for clouds, bushes) */
+  drawOrganicBlob(
+    cx: number, cy: number, rx: number, ry: number,
+    wobble: number, color: string, alpha: number = 1,
+    layer: number = LAYERS.ENTITIES,
+  ): void {
+    this.addCommand({
+      layer,
+      draw: (ctx) => {
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        const points = 8;
+        for (let i = 0; i <= points; i++) {
+          const angle = (i / points) * Math.PI * 2;
+          const wobbleOffset = Math.sin(angle * 3) * wobble;
+          const px = cx + Math.cos(angle) * (rx + wobbleOffset);
+          const py = cy + Math.sin(angle) * (ry + wobbleOffset);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      },
+    });
+  }
+
   private drawRoundRectPath(
     ctx: CanvasRenderingContext2D,
     x: number,

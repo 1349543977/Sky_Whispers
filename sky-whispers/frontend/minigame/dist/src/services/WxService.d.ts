@@ -52,4 +52,3 @@ export declare class WxService {
     hasLocationPermission(): boolean;
     hasWeRunPermission(): boolean;
 }
-//# sourceMappingURL=WxService.d.ts.map

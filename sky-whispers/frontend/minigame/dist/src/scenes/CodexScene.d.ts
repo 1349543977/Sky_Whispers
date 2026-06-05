@@ -32,4 +32,3 @@ export declare class CodexScene extends Scene {
     render(): void;
     onUnload(): void;
 }
-//# sourceMappingURL=CodexScene.d.ts.map

@@ -12,4 +12,3 @@ export declare class AdService {
     isAdAvailable(): boolean;
     destroy(): void;
 }
-//# sourceMappingURL=AdService.d.ts.map

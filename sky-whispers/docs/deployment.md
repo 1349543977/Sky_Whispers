@@ -5,14 +5,100 @@
 | 组件 | 最低版本 | 推荐版本 | 说明 |
 |------|---------|---------|------|
 | Node.js | 20.0.0 | 20.x LTS | 后端运行时 |
-| MySQL | 8.0 | 8.0.x | 主数据库 |
-| Redis | 7.0 | 7.x | 缓存与限流 |
-| Docker | 24.0 | 最新 | 容器化部署 |
-| Docker Compose | 2.20 | 最新 | 本地开发编排 |
-| kubectl | 1.28 | 最新 | Kubernetes 命令行 |
-| Helm | 3.12 | 最新 | Kubernetes 包管理 |
+| MySQL | 8.0 | 8.0.x | 主数据库（开发/测试/生产统一使用） |
+| Redis | 7.0 | 7.x | 缓存与限流（本地安装） |
 
-## 2. 环境变量参考
+## 2. 本地环境安装
+
+### 2.1 安装 MySQL
+
+**macOS:**
+```bash
+brew install mysql
+brew services start mysql
+# 设置 root 密码（可选）
+mysql_secure_installation
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install mysql-server
+sudo systemctl start mysql
+sudo systemctl enable mysql
+sudo mysql_secure_installation
+```
+
+**CentOS/RHEL:**
+```bash
+sudo yum install mysql-server
+sudo systemctl start mysqld
+sudo systemctl enable mysqld
+sudo mysql_secure_installation
+```
+
+**Windows:**
+下载 MySQL Installer: https://dev.mysql.com/downloads/installer/
+
+### 2.2 安装 Redis
+
+**macOS:**
+```bash
+brew install redis
+brew services start redis
+```
+
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install redis-server
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
+```
+
+**CentOS/RHEL:**
+```bash
+sudo yum install redis
+sudo systemctl start redis
+sudo systemctl enable redis
+```
+
+**Windows:**
+下载 Redis: https://github.com/tporadowski/redis/releases
+
+### 2.3 验证安装
+
+```bash
+# 验证 MySQL
+mysql --version
+mysql -u root -p -e "SELECT VERSION();"
+
+# 验证 Redis
+redis-cli --version
+redis-cli ping
+# 应返回 PONG
+```
+
+## 3. 创建数据库
+
+```bash
+# 登录 MySQL
+mysql -u root -p
+
+# 创建开发数据库
+CREATE DATABASE IF NOT EXISTS sky_whispers CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+# 创建测试数据库（运行测试需要）
+CREATE DATABASE IF NOT EXISTS sky_whispers_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+# 可选：创建专用用户
+CREATE USER 'sky_whispers'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON sky_whispers.* TO 'sky_whispers'@'localhost';
+GRANT ALL PRIVILEGES ON sky_whispers_test.* TO 'sky_whispers'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+## 4. 环境变量参考
 
 ### 后端服务环境变量
 
@@ -20,7 +106,7 @@
 |--------|------|--------|------|
 | `PORT` | 否 | 3000 | 服务端口 |
 | `NODE_ENV` | 是 | development | 运行环境 (development/production/test) |
-| `DB_HOST` | 是 | localhost | MySQL 主机 |
+| `DB_HOST` | 否 | localhost | MySQL 主机 |
 | `DB_PORT` | 否 | 3306 | MySQL 端口 |
 | `DB_NAME` | 否 | sky_whispers | 数据库名称 |
 | `DB_USER` | 是 | root | 数据库用户 |
@@ -46,223 +132,181 @@
 | `NEXT_PUBLIC_API_URL` | 是 | - | 后端 API 地址 |
 | `NEXT_PUBLIC_APP_NAME` | 否 | Sky Whispers Admin | 应用名称 |
 
-## 3. Docker Compose 本地开发
+## 5. 本地开发启动
 
-### 启动所有服务
+### 5.1 配置后端
 
 ```bash
-# 克隆项目
-git clone https://github.com/your-org/sky-whispers.git
-cd sky-whispers
+cd backend
 
 # 复制环境变量
-cp backend/.env.example backend/.env
-# 编辑 .env 填入实际配置
+cp .env.example .env
 
-# 启动所有服务
-docker compose up -d
+# 编辑 .env，填入数据库密码、微信密钥等
+# 至少需要修改：
+#   DB_PASSWORD=你的MySQL密码
+#   JWT_SECRET=自定义安全密钥
+#   WECHAT_APP_ID=你的微信AppID
+#   WECHAT_APP_SECRET=你的微信AppSecret
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+# 后端运行在 http://localhost:3000
+```
+
+### 5.2 启动管理后台
+
+```bash
+cd frontend/admin
+
+# 复制环境变量
+cp .env.local.example .env.local
+
+# 编辑 .env.local
+# NEXT_PUBLIC_API_BASE_URL=http://localhost:3000/api/v1
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
+# 后台运行在 http://localhost:3001
+```
+
+### 5.3 一键启动（使用 workspace 脚本）
+
+```bash
+# 在项目根目录
+npm install
+
+# 启动后端
+npm run dev:backend
+
+# 启动管理后台（新终端）
+npm run dev:admin
+
+# 运行测试
+npm run test:backend
+```
+
+## 6. 运行测试
+
+测试使用独立的 MySQL 测试数据库 `sky_whispers_test`，测试启动时自动创建。
+
+```bash
+cd backend
+
+# 确保本地 MySQL 和 Redis 正在运行
+mysql -u root -p -e "SELECT 1"   # 验证 MySQL
+redis-cli ping                     # 验证 Redis
+
+# 运行所有测试
+npm test
+
+# 运行特定测试
+npx jest tests/services/gameCalculation.service.test.ts
+
+# 监听模式
+npm run test:watch
+```
+
+## 7. 生产部署
+
+### 7.1 构建后端
+
+```bash
+cd backend
+npm install --production
+npm run build
+NODE_ENV=production node dist/app.js
+```
+
+### 7.2 构建管理后台
+
+```bash
+cd frontend/admin
+npm install
+npm run build
+npm start
+```
+
+### 7.3 使用 PM2 管理进程
+
+```bash
+# 安装 PM2
+npm install -g pm2
+
+# 启动后端
+pm2 start backend/dist/app.js --name sky-whispers-backend
+
+# 启动管理后台
+pm2 start frontend/admin/node_modules/.bin/next --name sky-whispers-admin -- start
+
+# 查看状态
+pm2 status
 
 # 查看日志
-docker compose logs -f backend
+pm2 logs
 
-# 停止所有服务
-docker compose down
+# 设置开机自启
+pm2 startup
+pm2 save
 ```
 
-### 单独启动基础设施
+### 7.4 Nginx 反向代理
+
+```nginx
+# /etc/nginx/conf.d/sky-whispers.conf
+
+# 后端 API
+server {
+    listen 80;
+    server_name api.skywhispers.example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# 管理后台
+server {
+    listen 80;
+    server_name admin.skywhispers.example.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:3001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+```
+
+### 7.5 SSL/TLS 配置（使用 Let's Encrypt）
 
 ```bash
-# 仅启动 MySQL 和 Redis
-docker compose up -d mysql redis
+# 安装 certbot
+sudo apt install certbot python3-certbot-nginx
 
-# 启动后端（本地开发模式）
-cd backend
-npm run dev
+# 签发证书
+sudo certbot --nginx -d api.skywhispers.example.com
+sudo certbot --nginx -d admin.skywhispers.example.com
+
+# 自动续期
+sudo certbot renew --dry-run
 ```
 
-## 4. 生产部署（Kubernetes）
+## 8. 监控设置
 
-### 4.1 构建 Docker 镜像
-
-```bash
-# 构建后端镜像
-docker build -t sky-whispers-backend:latest ./backend
-
-# 构建管理后台镜像
-docker build -t sky-whispers-admin:latest ./frontend/admin
-
-# 推送到镜像仓库
-docker tag sky-whispers-backend:latest registry.example.com/sky-whispers-backend:latest
-docker push registry.example.com/sky-whispers-backend:latest
-```
-
-### 4.2 Kubernetes 部署
-
-```bash
-# 创建命名空间
-kubectl create namespace sky-whispers
-
-# 创建 Secret（敏感配置）
-kubectl create secret generic sky-whispers-secrets \
-  --from-literal=JWT_SECRET=$(openssl rand -hex 32) \
-  --from-literal=DB_PASSWORD=your_db_password \
-  --from-literal=WECHAT_APP_SECRET=your_wechat_secret \
-  --from-literal=OSS_SECRET_KEY=your_oss_secret \
-  -n sky-whispers
-
-# 创建 ConfigMap（非敏感配置）
-kubectl create configmap sky-whispers-config \
-  --from-literal=NODE_ENV=production \
-  --from-literal=DB_HOST=mysql-service \
-  --from-literal=DB_PORT=3306 \
-  --from-literal=DB_NAME=sky_whispers \
-  --from-literal=DB_USER=sky_whispers \
-  --from-literal=REDIS_HOST=redis-service \
-  --from-literal=REDIS_PORT=6379 \
-  -n sky-whispers
-
-# 部署应用
-kubectl apply -f k8s/ -n sky-whispers
-
-# 检查部署状态
-kubectl get pods -n sky-whispers
-kubectl get services -n sky-whispers
-```
-
-### 4.3 数据库迁移
-
-```bash
-# 在 Kubernetes 中运行迁移 Job
-kubectl apply -f k8s/migration-job.yaml -n sky-whispers
-
-# 或在运行中的 Pod 内执行
-kubectl exec -it deployment/sky-whispers-backend -n sky-whispers -- \
-  npx sequelize db:migrate
-
-# 回滚迁移
-kubectl exec -it deployment/sky-whispers-backend -n sky-whispers -- \
-  npx sequelize db:migrate:undo
-```
-
-### 4.4 HPA 自动扩缩容
-
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: sky-whispers-backend-hpa
-  namespace: sky-whispers
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: sky-whispers-backend
-  minReplicas: 2
-  maxReplicas: 10
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 70
-    - type: Resource
-      resource:
-        name: memory
-        target:
-          type: Utilization
-          averageUtilization: 80
-```
-
-## 5. SSL/TLS 配置
-
-### 5.1 使用 cert-manager 自动签发证书
-
-```bash
-# 安装 cert-manager
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
-
-# 创建 ClusterIssuer
-cat <<EOF | kubectl apply -f -
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: letsencrypt-prod
-spec:
-  acme:
-    server: https://acme-v02.api.letsencrypt.org/directory
-    email: admin@skywhispers.example.com
-    privateKeySecretRef:
-      name: letsencrypt-prod
-    solvers:
-    - http01:
-        ingress:
-          class: nginx
-EOF
-```
-
-### 5.2 Ingress 配置
-
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: sky-whispers-ingress
-  namespace: sky-whispers
-  annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/rate-limit: "100"
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
-spec:
-  tls:
-    - hosts:
-        - api.skywhispers.example.com
-      secretName: sky-whispers-tls
-  rules:
-    - host: api.skywhispers.example.com
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: sky-whispers-backend
-                port:
-                  number: 3000
-```
-
-## 6. 监控设置
-
-### 6.1 Prometheus + Grafana
-
-```bash
-# 安装 Prometheus Operator
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo update
-helm install prometheus prometheus-community/kube-prometheus-stack \
-  -n monitoring --create-namespace
-
-# 添加后端服务监控
-cat <<EOF | kubectl apply -f -
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  name: sky-whispers-backend
-  namespace: sky-whispers
-  labels:
-    release: prometheus
-spec:
-  selector:
-    matchLabels:
-      app: sky-whispers-backend
-  endpoints:
-    - port: http
-      path: /metrics
-      interval: 15s
-EOF
-```
-
-### 6.2 关键监控指标
+### 8.1 关键监控指标
 
 | 指标 | 告警阈值 | 说明 |
 |------|---------|------|
@@ -272,27 +316,17 @@ EOF
 | 内存使用率 | > 85% | 资源指标 |
 | MySQL 连接数 | > 80% 最大连接 | 数据库指标 |
 | Redis 命中率 | < 90% | 缓存指标 |
-| Pod 重启次数 | > 3 次/小时 | 稳定性指标 |
 
-### 6.3 日志收集
+## 9. 备份策略
 
-```bash
-# 使用 EFK (Elasticsearch + Fluentd + Kibana)
-helm install elasticsearch elastic/elasticsearch -n logging --create-namespace
-helm install kibana elastic/kibana -n logging
-helm install fluentd stable/fluentd -n logging
-```
-
-## 7. 备份策略
-
-### 7.1 数据库备份
+### 9.1 数据库备份
 
 ```bash
-# 每日全量备份脚本
 #!/bin/bash
+# 每日全量备份脚本
 DATE=$(date +%Y%m%d)
 BACKUP_DIR=/backups/mysql
-MYSQL_HOST=mysql-service
+MYSQL_HOST=localhost
 MYSQL_DB=sky_whispers
 
 # 全量备份
@@ -302,58 +336,61 @@ mysqldump -h $MYSQL_HOST -u root -p$DB_PASSWORD \
 
 # 保留最近 30 天备份
 find $BACKUP_DIR -name "sky_whispers_*.sql.gz" -mtime +30 -delete
-
-# 上传到 OSS
-ossutil cp $BACKUP_DIR/sky_whispers_$DATE.sql.gz \
-  oss://sky-whispers-backups/mysql/$DATE/
 ```
 
-### 7.2 Kubernetes CronJob 自动备份
-
-```yaml
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: mysql-backup
-  namespace: sky-whispers
-spec:
-  schedule: "0 2 * * *"  # 每天凌晨 2 点
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-            - name: backup
-              image: mysql:8.0
-              command:
-                - /bin/bash
-                - -c
-                - |
-                  mysqldump -h $MYSQL_HOST -u $MYSQL_USER -p$MYSQL_PASSWORD \
-                    --single-transaction $MYSQL_DB | gzip > /backup/sky_whispers_$(date +%Y%m%d).sql.gz
-              envFrom:
-                - secretRef:
-                    name: sky-whispers-secrets
-          restartPolicy: OnFailure
-```
-
-### 7.3 Redis 备份
+### 9.2 Redis 备份
 
 ```bash
 # Redis RDB 快照
-redis-cli -h redis-service BGSAVE
+redis-cli BGSAVE
 
 # 复制 RDB 文件
-kubectl cp sky-whispers/redis-pod:/data/dump.rdb ./redis_backup_$(date +%Y%m%d).rdb
+cp /var/lib/redis/dump.rdb ./redis_backup_$(date +%Y%m%d).rdb
 ```
 
-### 7.4 灾难恢复
+### 9.3 灾难恢复
 
 ```bash
 # 恢复 MySQL
-gunzip < sky_whispers_20260604.sql.gz | mysql -h $MYSQL_HOST -u root -p$DB_PASSWORD sky_whispers
+gunzip < sky_whispers_20260604.sql.gz | mysql -h localhost -u root -p$DB_PASSWORD sky_whispers
 
 # 恢复 Redis
-kubectl cp ./redis_backup_20260604.rdb sky-whispers/redis-pod:/data/dump.rdb
-kubectl exec -it redis-pod -n sky-whispers -- redis-cli SHUTDOWN NOSAVE
+cp ./redis_backup_20260604.rdb /var/lib/redis/dump.rdb
+sudo systemctl restart redis
+```
+
+## 10. 常见问题
+
+### Q: MySQL 连接被拒绝
+```bash
+# 检查 MySQL 是否运行
+sudo systemctl status mysql
+
+# 检查端口
+netstat -tlnp | grep 3306
+
+# 检查用户权限
+mysql -u root -p -e "SELECT user, host FROM mysql.user;"
+```
+
+### Q: Redis 连接失败
+```bash
+# 检查 Redis 是否运行
+sudo systemctl status redis
+
+# 测试连接
+redis-cli ping
+
+# 检查配置
+redis-cli CONFIG GET bind
+redis-cli CONFIG GET port
+```
+
+### Q: 测试数据库初始化失败
+```bash
+# 手动创建测试数据库
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS sky_whispers_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# 确认权限
+mysql -u root -p -e "SHOW GRANTS FOR CURRENT_USER();"
 ```

@@ -18,10 +18,9 @@
     "lint:all": "npm run lint --workspaces",
     "lint:backend": "npm run lint --workspace=backend",
     "lint:admin": "npm run lint --workspace=sky-whispers-admin",
-    "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f",
-    "docker:build": "docker compose build"
+    "db:create": "cd backend && npx sequelize-cli db:create",
+    "db:migrate": "cd backend && npx sequelize-cli db:migrate",
+    "db:seed": "cd backend && npx sequelize-cli db:seed:all"
   },
   "engines": {
     "node": ">=20.0.0"

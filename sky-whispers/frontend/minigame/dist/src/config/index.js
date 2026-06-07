@@ -14,8 +14,8 @@ exports.API_BASE_URL = void 0;
  * 生产环境：
  * - 配置你的正式服务器域名
  */
-exports.API_BASE_URL = 'http://localhost:3000';
+exports.API_BASE_URL = 'http://192.168.0.101:3000';
 // 快速配置（取消注释并修改）：
-// export const API_BASE_URL = 'http://192.168.0.101:3000';
+// export const API_BASE_URL = 'http://localhost:3000';
 // export const API_BASE_URL = 'https://api.yourdomain.com';
 //# sourceMappingURL=index.js.map

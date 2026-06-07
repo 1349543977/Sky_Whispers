@@ -8,4 +8,4 @@
  * 生产环境：
  * - 配置你的正式服务器域名
  */
-export declare const API_BASE_URL = "http://localhost:3000";
+export declare const API_BASE_URL = "http://192.168.0.101:3000";

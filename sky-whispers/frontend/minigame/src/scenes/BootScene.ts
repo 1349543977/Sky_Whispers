@@ -44,7 +44,8 @@ export class BootScene extends Scene {
   constructor(renderer: Renderer, input: Input) {
     super(SceneName.Boot, renderer, input);
     this.storageService = new StorageService();
-    this.apiClient = new ApiClient('', this.storageService);
+    // For local development, use localhost API
+    this.apiClient = new ApiClient('http://localhost:3000', this.storageService);
     this.wxService = new WxService();
   }
 

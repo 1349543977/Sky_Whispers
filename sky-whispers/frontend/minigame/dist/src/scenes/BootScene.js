@@ -11,6 +11,7 @@ const WxService_1 = require("../services/WxService");
 const StorageService_1 = require("../services/StorageService");
 const constants_1 = require("../utils/constants");
 const color_1 = require("../utils/color");
+const config_1 = require("../config");
 class BootScene extends Scene_1.Scene {
     constructor(renderer, input) {
         super(types_1.SceneName.Boot, renderer, input);
@@ -27,7 +28,9 @@ class BootScene extends Scene_1.Scene {
         this.sparkleTimer = 0;
         this.sparkles = [];
         this.storageService = new StorageService_1.StorageService();
-        this.apiClient = new ApiClient_1.ApiClient('', this.storageService);
+        // API 地址请在 src/config/index.ts 中配置
+        console.log('[BootScene] API Base URL:', config_1.API_BASE_URL);
+        this.apiClient = new ApiClient_1.ApiClient(config_1.API_BASE_URL, this.storageService);
         this.wxService = new WxService_1.WxService();
     }
     async onLoad() {

@@ -12,6 +12,7 @@ import { WxService } from '../services/WxService';
 import { StorageService } from '../services/StorageService';
 import { LAYERS } from '../utils/constants';
 import { DesignTokens } from '../utils/color';
+import { API_BASE_URL } from '../config';
 
 export class BootScene extends Scene {
   private apiClient: ApiClient;
@@ -44,11 +45,9 @@ export class BootScene extends Scene {
   constructor(renderer: Renderer, input: Input) {
     super(SceneName.Boot, renderer, input);
     this.storageService = new StorageService();
-    // API 地址配置：
-    // - 真机调试时需要使用你电脑的局域网 IP（如 http://192.168.x.x:3000）
-    // - 可以在微信开发者工具的详情 -> 本地设置中查看 IP
-    const apiBaseUrl = 'http://localhost:3000'; // 请替换为你的局域网 IP
-    this.apiClient = new ApiClient(apiBaseUrl, this.storageService);
+    // API 地址请在 src/config/index.ts 中配置
+    console.log('[BootScene] API Base URL:', API_BASE_URL);
+    this.apiClient = new ApiClient(API_BASE_URL, this.storageService);
     this.wxService = new WxService();
   }
 

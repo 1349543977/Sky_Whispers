@@ -1,0 +1,21 @@
+"use strict";
+// ============================================================
+// 游戏配置文件
+// ============================================================
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.API_BASE_URL = void 0;
+/**
+ * API 基础地址配置
+ *
+ * 开发环境（真机调试）：
+ * - 使用你电脑的局域网 IP，例如：http://192.168.0.101:3000
+ * - 在微信开发者工具 -> 详情 -> 本地设置 可以查看你的 IP
+ *
+ * 生产环境：
+ * - 配置你的正式服务器域名
+ */
+exports.API_BASE_URL = 'http://localhost:3000';
+// 快速配置（取消注释并修改）：
+// export const API_BASE_URL = 'http://192.168.0.101:3000';
+// export const API_BASE_URL = 'https://api.yourdomain.com';
+//# sourceMappingURL=index.js.map

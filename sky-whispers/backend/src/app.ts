@@ -48,10 +48,12 @@ async function startServer(): Promise<void> {
 
     const app = createApp();
 
-    const server = app.listen(config.port, () => {
+    const server = app.listen(config.port, '0.0.0.0', () => {
       logger.info(`🚀 Sky Whispers 后端服务已启动`, {
         port: config.port,
+        host: '0.0.0.0',
         env: config.nodeEnv,
+        note: '真机调试请使用局域网 IP 访问',
       });
     });
 

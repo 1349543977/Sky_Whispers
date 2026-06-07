@@ -44,8 +44,11 @@ export class BootScene extends Scene {
   constructor(renderer: Renderer, input: Input) {
     super(SceneName.Boot, renderer, input);
     this.storageService = new StorageService();
-    // For local development, use localhost API
-    this.apiClient = new ApiClient('http://localhost:3000', this.storageService);
+    // API 地址配置：
+    // - 真机调试时需要使用你电脑的局域网 IP（如 http://192.168.x.x:3000）
+    // - 可以在微信开发者工具的详情 -> 本地设置中查看 IP
+    const apiBaseUrl = 'http://localhost:3000'; // 请替换为你的局域网 IP
+    this.apiClient = new ApiClient(apiBaseUrl, this.storageService);
     this.wxService = new WxService();
   }
 
